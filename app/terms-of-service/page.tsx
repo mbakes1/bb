@@ -80,40 +80,7 @@ export default function TermsOfService() {
 
               <section>
                 <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-                  4. Subscription and Payment
-                </h2>
-                <div className="space-y-3">
-                  <p className="leading-relaxed">
-                    Some aspects of our Service are provided on a subscription
-                    basis. By subscribing, you agree to:
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 ml-4">
-                    <li>
-                      Pay all applicable fees as described in our pricing plans
-                    </li>
-                    <li>
-                      Provide current, complete, and accurate billing
-                      information
-                    </li>
-                    <li>
-                      Authorize us to charge your payment method on a recurring
-                      basis
-                    </li>
-                    <li>
-                      Be responsible for all charges incurred under your account
-                    </li>
-                  </ul>
-                  <p className="leading-relaxed mt-3">
-                    Subscription fees are non-refundable except as required by
-                    law. We reserve the right to change our subscription plans
-                    or adjust pricing with 30 days&apos; notice.
-                  </p>
-                </div>
-              </section>
-
-              <section>
-                <h2 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
-                  5. User Responsibilities and Conduct
+                  4. User Responsibilities and Conduct
                 </h2>
                 <div className="space-y-3">
                   <p className="leading-relaxed">

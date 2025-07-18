@@ -69,7 +69,9 @@ export default function UserProfile({ mini }: { mini?: boolean }) {
   if (error) {
     return (
       <div
-        className={`flex gap-2 justify-start items-center w-full rounded ${mini ? "" : "px-4 pt-2 pb-3"}`}
+        className={`flex gap-2 justify-start items-center w-full rounded ${
+          mini ? "" : "px-4 pt-2 pb-3"
+        }`}
       >
         <div className="text-red-500 text-sm flex-1">
           {mini ? "Error" : error}
@@ -82,7 +84,9 @@ export default function UserProfile({ mini }: { mini?: boolean }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div
-          className={`flex gap-2 justify-start items-center w-full rounded ${mini ? "" : "px-4 pt-2 pb-3"}`}
+          className={`flex gap-2 justify-start items-center w-full rounded ${
+            mini ? "" : "px-4 pt-2 pb-3"
+          }`}
         >
           <Avatar>
             {loading ? (
@@ -119,12 +123,6 @@ export default function UserProfile({ mini }: { mini?: boolean }) {
             <DropdownMenuItem>
               Profile
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/dashboard/settings?tab=billing">
-            <DropdownMenuItem>
-              Billing
-              <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>

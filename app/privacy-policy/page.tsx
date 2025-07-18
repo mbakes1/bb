@@ -154,10 +154,7 @@ export default function PrivacyPolicy() {
                   <li>
                     <strong>Google Sign-In:</strong> For authentication services
                   </li>
-                  <li>
-                    <strong>Payment processors:</strong> For handling
-                    subscription payments
-                  </li>
+
                   <li>
                     <strong>Analytics services:</strong> To understand service
                     usage
