@@ -7,6 +7,9 @@ import { nextCookies } from "better-auth/next-js";
 export const auth = betterAuth({
   trustedOrigins: [`${process.env.NEXT_PUBLIC_APP_URL}`],
   allowedDevOrigins: [`${process.env.NEXT_PUBLIC_APP_URL}`],
+  logger: {
+    level: "debug",
+  },
   cookieCache: {
     enabled: true,
     maxAge: 5 * 60, // Cache duration in seconds
@@ -20,13 +23,13 @@ export const auth = betterAuth({
       verification,
     },
   }),
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    },
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: false, // Set to true if you want email verification
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
+    autoSignIn: true,
   },
-  plugins: [
-    nextCookies(),
-  ],
+
+  plugins: [nextCookies()],
 });
