@@ -128,7 +128,7 @@ function SignInContent() {
               href="/sign-up"
               className="text-sm text-muted-foreground hover:text-foreground underline"
             >
-              Don't have an account? Sign up
+              Don&apos;t have an account? Sign up
             </Link>
           </div>
         </CardContent>
