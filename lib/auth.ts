@@ -5,6 +5,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
+  secret: process.env.BETTER_AUTH_SECRET!,
   trustedOrigins: [`${process.env.NEXT_PUBLIC_APP_URL}`],
   allowedDevOrigins: [`${process.env.NEXT_PUBLIC_APP_URL}`],
   logger: {
