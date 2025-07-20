@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -51,7 +51,7 @@ export default function TendersPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(3000); // Fixed page size
+  const [pageSize] = useState(8000); // Fixed page size
   const [dateFrom, setDateFrom] = useState<Date | undefined>(defaultDates.from);
   const [dateTo, setDateTo] = useState<Date | undefined>(defaultDates.to);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -85,7 +85,7 @@ export default function TendersPage() {
     return true;
   };
 
-  const loadTenders = async () => {
+  const loadTenders = useCallback(async () => {
     if (!validateDates()) {
       return;
     }
@@ -143,14 +143,14 @@ export default function TendersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateFrom, dateTo, currentPage, pageSize]);
 
   // Load tenders on component mount and when page changes
   useEffect(() => {
     if (dateFrom && dateTo) {
       loadTenders();
     }
-  }, [currentPage]);
+  }, [loadTenders, dateFrom, dateTo]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";

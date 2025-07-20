@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -67,6 +61,7 @@ export default function TenderDetailPage() {
         const data: Release = await response.json();
 
         if (!data || !data.ocid) {
+          console.error("Invalid tender data structure:", data);
           throw new Error(
             "Invalid tender data received. Please try refreshing the page."
           );
@@ -75,6 +70,8 @@ export default function TenderDetailPage() {
         setRelease(data);
       } catch (err) {
         console.error("Error loading tender detail:", err);
+        console.error("OCID being requested:", ocid);
+
         if (err instanceof TypeError && err.message.includes("fetch")) {
           setError(
             "Network error: Unable to connect to the tender service. Please check your internet connection and try again."
