@@ -124,22 +124,22 @@ export default function TenderDetailPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Skeleton className="h-10 w-10 bg-muted" />
+          <Skeleton className="h-10 w-10" />
           <div className="space-y-2">
-            <Skeleton className="h-8 w-64 bg-muted" />
-            <Skeleton className="h-4 w-48 bg-muted" />
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-48" />
           </div>
         </div>
         <Card>
           <CardHeader>
-            <Skeleton className="h-6 w-3/4 bg-muted" />
-            <Skeleton className="h-4 w-1/2 bg-muted" />
+            <Skeleton className="h-6 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <Skeleton className="h-4 w-full bg-muted" />
-              <Skeleton className="h-4 w-2/3 bg-muted" />
-              <Skeleton className="h-32 w-full bg-muted" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-2/3" />
+              <Skeleton className="h-32 w-full" />
             </div>
           </CardContent>
         </Card>

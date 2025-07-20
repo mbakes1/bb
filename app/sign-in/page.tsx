@@ -16,7 +16,7 @@ export default function SignIn() {
     <Suspense
       fallback={
         <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-          <div className="w-full max-w-sm md:max-w-3xl bg-gray-200 dark:bg-gray-800 animate-pulse rounded-lg h-96"></div>
+          <div className="w-full max-w-sm md:max-w-3xl bg-muted animate-pulse rounded-lg h-96"></div>
         </div>
       }
     >

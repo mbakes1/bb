@@ -29,11 +29,12 @@ export default function PrivacyPolicy() {
                   1. Introduction
                 </h2>
                 <p className="leading-relaxed">
-                  Welcome to Nextjs Starter Kit (&aposwe,&apos &aposour,&apos or
-                  &aposus&apos). We are committed to protecting your personal
+                  Welcome to BidBase (&apos;we,&apos; &apos;our,&apos; or
+                  &apos;us&apos;). We are committed to protecting your personal
                   information and your right to privacy. This Privacy Policy
                   explains how we collect, use, disclose, and safeguard your
-                  information when you use our service.
+                  information when you use our procurement opportunity
+                  management platform.
                 </p>
               </section>
 
@@ -61,16 +62,16 @@ export default function PrivacyPolicy() {
 
                   <div>
                     <h3 className="text-lg font-medium mb-2">
-                      Pass Information
+                      Procurement Information
                     </h3>
                     <p className="leading-relaxed">
-                      When you create Apple Passes, we store:
+                      When you use our procurement services, we store:
                     </p>
                     <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
-                      <li>Pass content and metadata</li>
-                      <li>Pass templates and designs</li>
-                      <li>Pass usage analytics</li>
-                      <li>Pass installation data</li>
+                      <li>Opportunity tracking preferences</li>
+                      <li>Bid submission history</li>
+                      <li>Document uploads and metadata</li>
+                      <li>Search and filter preferences</li>
                     </ul>
                   </div>
 
@@ -100,12 +101,12 @@ export default function PrivacyPolicy() {
                   We use your information to:
                 </p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
-                  <li>Provide and maintain our service</li>
+                  <li>Provide and maintain our procurement platform</li>
                   <li>Create and manage your account</li>
-                  <li>Generate and distribute Apple Passes</li>
-                  <li>Send you important updates and notifications</li>
+                  <li>Deliver relevant opportunity notifications</li>
+                  <li>Send you important updates and alerts</li>
                   <li>Respond to your inquiries and support requests</li>
-                  <li>Monitor and analyze usage patterns</li>
+                  <li>Monitor and analyze platform usage</li>
                   <li>Improve our service and develop new features</li>
                   <li>Comply with legal obligations</li>
                 </ul>
@@ -152,12 +153,20 @@ export default function PrivacyPolicy() {
                 </p>
                 <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
                   <li>
-                    <strong>Google Sign-In:</strong> For authentication services
+                    <strong>Authentication providers:</strong> For secure
+                    account access
                   </li>
-
                   <li>
-                    <strong>Analytics services:</strong> To understand service
+                    <strong>Cloud storage services:</strong> For document
+                    management
+                  </li>
+                  <li>
+                    <strong>Analytics services:</strong> To understand platform
                     usage
+                  </li>
+                  <li>
+                    <strong>Notification services:</strong> For opportunity
+                    alerts
                   </li>
                 </ul>
                 <p className="mt-3 leading-relaxed">
@@ -267,8 +276,8 @@ export default function PrivacyPolicy() {
                   data practices, please contact us at:
                 </p>
                 <div className="mt-3 space-y-1">
-                  <p>Email: privacy@applepass.com</p>
-                  <p>Address: [Your Company Address]</p>
+                  <p>Email: privacy@bidbase.com</p>
+                  <p>Address: [BidBase Company Address]</p>
                 </div>
               </section>
             </div>

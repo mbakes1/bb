@@ -56,12 +56,12 @@ export default function TendersPage() {
   const [dateTo, setDateTo] = useState<Date | undefined>(defaultDates.to);
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const validateDates = (): boolean => {
+  const validateDates = useCallback((): boolean => {
     setValidationError(null);
 
     if (!dateFrom || !dateTo) {
       setValidationError(
-        "Please select both start and end dates to search for tenders."
+        "Please select both start and end dates to search for opportunities."
       );
       return false;
     }
@@ -83,7 +83,7 @@ export default function TendersPage() {
     }
 
     return true;
-  };
+  }, [dateFrom, dateTo]);
 
   const loadTenders = useCallback(async () => {
     if (!validateDates()) {
@@ -105,7 +105,9 @@ export default function TendersPage() {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error("No tenders found for the selected date range.");
+          throw new Error(
+            "No opportunities found for the selected date range."
+          );
         } else if (response.status >= 500) {
           throw new Error("Server error occurred. Please try again later.");
         } else {
@@ -120,7 +122,7 @@ export default function TendersPage() {
       if (!data.releases || data.releases.length === 0) {
         setReleases([]);
         setError(
-          "No tenders found for the selected date range. Try expanding your search period."
+          "No opportunities found for the selected date range. Try expanding your search period."
         );
       } else {
         setReleases(data.releases);
@@ -130,20 +132,20 @@ export default function TendersPage() {
       console.error("Error loading tenders:", err);
       if (err instanceof TypeError && err.message.includes("fetch")) {
         setError(
-          "Network error: Unable to connect to the tender service. Please check your internet connection and try again."
+          "Network error: Unable to connect to the opportunity service. Please check your internet connection and try again."
         );
       } else {
         setError(
           err instanceof Error
             ? err.message
-            : "An unexpected error occurred while loading tenders. Please try again."
+            : "An unexpected error occurred while loading opportunities. Please try again."
         );
       }
       setReleases([]);
     } finally {
       setLoading(false);
     }
-  }, [dateFrom, dateTo, currentPage, pageSize]);
+  }, [dateFrom, dateTo, currentPage, pageSize, validateDates]);
 
   // Load tenders on component mount and when page changes
   useEffect(() => {
@@ -211,9 +213,10 @@ export default function TendersPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tenders</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Opportunities</h1>
             <p className="text-muted-foreground">
-              Browse and explore government tenders from the OCDS API
+              Discover and track procurement opportunities that match your
+              business
             </p>
           </div>
           <Button onClick={handleRefresh} disabled={loading}>
@@ -227,10 +230,10 @@ export default function TendersPage() {
         {/* Filters */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Date Range Filter</CardTitle>
+            <CardTitle className="text-lg">Search Opportunities</CardTitle>
             <CardDescription>
-              Select a date range to search for tenders. Both dates are
-              required.
+              Select a date range to find relevant procurement opportunities.
+              Both dates are required.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -304,7 +307,7 @@ export default function TendersPage() {
               <div className="flex items-end">
                 <Button onClick={handleSearch} disabled={loading}>
                   <Search className="mr-2 h-4 w-4" />
-                  Search Tenders
+                  Find Opportunities
                 </Button>
               </div>
             </div>
@@ -331,7 +334,7 @@ export default function TendersPage() {
         <div className="space-y-4">
           <div className="text-center text-muted-foreground">
             <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
-            Loading tenders for{" "}
+            Loading opportunities for{" "}
             {dateFrom &&
               dateTo &&
               `${format(dateFrom, "MMM dd")} - ${format(
@@ -362,13 +365,16 @@ export default function TendersPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <FileText className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No tenders found</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              No opportunities found
+            </h3>
             <p className="text-muted-foreground text-center mb-4">
-              No tenders were found for the period {format(dateFrom, "MMM dd")}{" "}
-              - {format(dateTo, "MMM dd, yyyy")}.
+              No opportunities were found for the period{" "}
+              {format(dateFrom, "MMM dd")} - {format(dateTo, "MMM dd, yyyy")}.
             </p>
             <p className="text-sm text-muted-foreground text-center">
-              Try expanding your date range or check back later for new tenders.
+              Try expanding your date range or check back later for new
+              opportunities.
             </p>
           </CardContent>
         </Card>
@@ -379,9 +385,9 @@ export default function TendersPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Found {releases.length} tender{releases.length !== 1 ? "s" : ""}{" "}
-              for {format(dateFrom!, "MMM dd")} -{" "}
-              {format(dateTo!, "MMM dd, yyyy")}
+              Found {releases.length} opportunit
+              {releases.length !== 1 ? "ies" : "y"} for{" "}
+              {format(dateFrom!, "MMM dd")} - {format(dateTo!, "MMM dd, yyyy")}
             </p>
             {releases.length === pageSize && (
               <Badge variant="secondary">
@@ -412,7 +418,7 @@ export default function TendersPage() {
                         <CardTitle className="text-xl mb-2">
                           {tender.title ||
                             tender.description ||
-                            "Untitled Tender"}
+                            "Untitled Opportunity"}
                         </CardTitle>
                         <CardDescription className="line-clamp-2">
                           {tender.description || "No description available"}

@@ -74,9 +74,9 @@ export function SignUpForm({
           <form onSubmit={handleSubmit} className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold">Create your account</h1>
+                <h1 className="text-2xl font-bold">Join BidBase</h1>
                 <p className="text-muted-foreground text-balance">
-                  Enter your details to get started
+                  Start discovering procurement opportunities
                 </p>
               </div>
               <div className="grid gap-3">
@@ -84,7 +84,7 @@ export function SignUpForm({
                 <Input
                   id="name"
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Your full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -95,7 +95,7 @@ export function SignUpForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="your.email@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -208,7 +208,7 @@ export function SignUpForm({
         </CardContent>
       </Card>
       <div className="text-muted-foreground text-center text-xs text-balance">
-        By clicking continue, you agree to our{" "}
+        By creating an account, you agree to our{" "}
         <Link href="/terms-of-service" className="underline underline-offset-4">
           Terms of Service
         </Link>{" "}

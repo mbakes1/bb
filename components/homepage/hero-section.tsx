@@ -11,12 +11,12 @@ export default function HeroSection() {
             BidBase
           </h1>
           <p className="text-muted-foreground mx-auto mb-6 mt-4 text-balance text-xl">
-            South African Public Sector Contracts
+            Navigate procurement opportunities with confidence
           </p>
           <div className="flex flex-col items-center gap-2 *:w-full sm:flex-row sm:justify-center sm:*:w-auto">
             <Button asChild variant="default" size="sm">
               <Link href="/dashboard" prefetch={true}>
-                <span className="text-nowrap">Get Started</span>
+                <span className="text-nowrap">Start Exploring</span>
               </Link>
             </Button>
           </div>

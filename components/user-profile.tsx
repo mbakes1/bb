@@ -47,6 +47,7 @@ export default function UserProfile({ mini }: { mini?: boolean }) {
       }
 
       setUserInfo(result.data?.user);
+      console.log("User data loaded:", result.data?.user);
     } catch (error) {
       console.error("Error fetching user data:", error);
       setError("Failed to load user profile. Please try refreshing the page.");
@@ -101,7 +102,9 @@ export default function UserProfile({ mini }: { mini?: boolean }) {
                   <AvatarImage src={userInfo?.image} alt="User Avatar" />
                 ) : (
                   <AvatarFallback className="rounded-lg">
-                    {userInfo?.name && userInfo.name.charAt(0).toUpperCase()}
+                    {userInfo?.name
+                      ? userInfo.name.charAt(0).toUpperCase()
+                      : "U"}
                   </AvatarFallback>
                 )}
               </>
@@ -131,7 +134,7 @@ export default function UserProfile({ mini }: { mini?: boolean }) {
                 <AvatarImage src={userInfo?.image} alt="User Avatar" />
               ) : (
                 <AvatarFallback className="rounded-lg">
-                  {userInfo?.name && userInfo.name.charAt(0).toUpperCase()}
+                  {userInfo?.name ? userInfo.name.charAt(0).toUpperCase() : "U"}
                 </AvatarFallback>
               )}
             </Avatar>

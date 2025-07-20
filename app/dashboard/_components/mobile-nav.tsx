@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import UserProfile from "@/components/user-profile";
 import {
   BarChart3,
+  FileText,
   HelpCircle,
   HomeIcon,
   LucideIcon,
@@ -38,7 +39,12 @@ const navItems: NavItem[] = [
     icon: HomeIcon,
   },
   {
-    label: "Upload",
+    label: "Opportunities",
+    href: "/dashboard/tenders",
+    icon: FileText,
+  },
+  {
+    label: "Documents",
     href: "/dashboard/upload",
     icon: Upload,
   },
@@ -102,7 +108,7 @@ export default function MobileNav() {
         <div className="flex flex-col space-y-3 mt-6">
           <div className="px-2 py-2">
             <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">
-              Navigation
+              Procurement
             </h2>
             <div className="space-y-1">
               {navItems.map((item) => (
@@ -127,7 +133,7 @@ export default function MobileNav() {
 
           <div className="px-2 py-2">
             <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">
-              Configuration
+              Account
             </h2>
             <div className="space-y-1">
               {settingsItems.map((item) => (

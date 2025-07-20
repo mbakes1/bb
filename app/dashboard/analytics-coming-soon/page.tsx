@@ -3,8 +3,8 @@ import { ComingSoon } from "../_components/coming-soon";
 export default function AnalyticsComingSoonPage() {
   return (
     <ComingSoon
-      title="Analytics - Coming Soon"
-      description="The analytics feature is currently under development and will be available soon."
+      title="Analytics Dashboard"
+      description="Track your procurement performance with detailed analytics and insights. Coming soon."
     />
   );
 }

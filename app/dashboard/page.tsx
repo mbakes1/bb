@@ -18,10 +18,10 @@ export default async function Dashboard() {
       <div className="w-full">
         <div className="flex flex-col items-start justify-center gap-2">
           <h1 className="text-3xl font-semibold tracking-tight">
-            Interactive Chart
+            Dashboard Overview
           </h1>
           <p className="text-muted-foreground">
-            Interactive chart with data visualization and interactive elements.
+            Monitor your procurement activity and track opportunities.
           </p>
         </div>
         <div className="@container/main flex flex-1 flex-col gap-2">

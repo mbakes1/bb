@@ -144,14 +144,14 @@ function SettingsContent() {
       <div className="flex flex-col gap-6 p-6">
         {/* Header Skeleton */}
         <div>
-          <Skeleton className="h-9 w-32 mb-2 bg-gray-200 dark:bg-gray-800" />
-          <Skeleton className="h-5 w-80 bg-gray-200 dark:bg-gray-800" />
+          <Skeleton className="h-9 w-32 mb-2" />
+          <Skeleton className="h-5 w-80" />
         </div>
 
         {/* Tabs Skeleton */}
         <div className="w-full max-w-4xl">
           <div className="flex space-x-1 mb-6">
-            <Skeleton className="h-10 w-20 bg-gray-200 dark:bg-gray-800" />
+            <Skeleton className="h-10 w-20" />
           </div>
 
           <div className="space-y-6">
@@ -159,36 +159,36 @@ function SettingsContent() {
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <Skeleton className="h-5 w-5 rounded bg-gray-200 dark:bg-gray-800" />
-                  <Skeleton className="h-6 w-40 bg-gray-200 dark:bg-gray-800" />
+                  <Skeleton className="h-5 w-5 rounded" />
+                  <Skeleton className="h-6 w-40" />
                 </div>
-                <Skeleton className="h-4 w-72 bg-gray-200 dark:bg-gray-800" />
+                <Skeleton className="h-4 w-72" />
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <Skeleton className="h-20 w-20 rounded-full bg-gray-200 dark:bg-gray-800" />
+                  <Skeleton className="h-20 w-20 rounded-full" />
                   <div className="space-y-2">
                     <div className="flex gap-2">
-                      <Skeleton className="h-8 w-24 bg-gray-200 dark:bg-gray-800" />
-                      <Skeleton className="h-8 w-12 bg-gray-200 dark:bg-gray-800" />
-                      <Skeleton className="h-8 w-16 bg-gray-200 dark:bg-gray-800" />
+                      <Skeleton className="h-8 w-24" />
+                      <Skeleton className="h-8 w-12" />
+                      <Skeleton className="h-8 w-16" />
                     </div>
-                    <Skeleton className="h-4 w-48 bg-gray-200 dark:bg-gray-800" />
+                    <Skeleton className="h-4 w-48" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-20 bg-gray-200 dark:bg-gray-800" />
-                    <Skeleton className="h-10 w-full bg-gray-200 dark:bg-gray-800" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-10 w-full" />
                   </div>
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-12 bg-gray-200 dark:bg-gray-800" />
-                    <Skeleton className="h-10 w-full bg-gray-200 dark:bg-gray-800" />
+                    <Skeleton className="h-4 w-12" />
+                    <Skeleton className="h-10 w-full" />
                   </div>
                 </div>
 
-                <Skeleton className="h-10 w-28 bg-gray-200 dark:bg-gray-800" />
+                <Skeleton className="h-10 w-28" />
               </CardContent>
             </Card>
           </div>
@@ -201,9 +201,11 @@ function SettingsContent() {
     <div className="flex flex-col gap-6 p-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Settings</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Account Settings
+        </h1>
         <p className="text-muted-foreground mt-2">
-          Manage your account settings and preferences
+          Manage your profile and procurement preferences
         </p>
       </div>
 
@@ -225,7 +227,7 @@ function SettingsContent() {
                 Profile Information
               </CardTitle>
               <CardDescription>
-                Update your personal information and profile settings
+                Update your contact details and professional information
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -234,9 +236,12 @@ function SettingsContent() {
                   <AvatarImage src={imagePreview || user?.image || ""} />
                   <AvatarFallback>
                     {name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+                      ? name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .toUpperCase()
+                      : "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="space-y-2">
@@ -324,8 +329,8 @@ export default function SettingsPage() {
       fallback={
         <div className="flex flex-col gap-6 p-6">
           <div>
-            <div className="h-9 w-32 mb-2 bg-gray-200 dark:bg-gray-800 animate-pulse rounded-md" />
-            <div className="h-5 w-80 bg-gray-200 dark:bg-gray-800 animate-pulse rounded-md" />
+            <Skeleton className="h-9 w-32 mb-2" />
+            <Skeleton className="h-5 w-80" />
           </div>
         </div>
       }

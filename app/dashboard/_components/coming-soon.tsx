@@ -28,7 +28,7 @@ export function ComingSoon({ title, description }: ComingSoonProps) {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Stay tuned for updates!
+            We&apos;re working hard to bring you this feature. Check back soon!
           </p>
         </CardContent>
       </Card>

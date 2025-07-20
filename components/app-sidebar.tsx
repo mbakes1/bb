@@ -52,12 +52,12 @@ const navItems: NavItem[] = [
     icon: HomeIcon,
   },
   {
-    label: "Tenders",
+    label: "Opportunities",
     href: "/dashboard/tenders",
     icon: FileText,
   },
   {
-    label: "Upload",
+    label: "Documents",
     href: "/dashboard/upload",
     icon: Upload,
   },
@@ -186,14 +186,14 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Procurement</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{navItems.map(renderNavItem)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Configuration</SidebarGroupLabel>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {settingsItems.map((item) => (

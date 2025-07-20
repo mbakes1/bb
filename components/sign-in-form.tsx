@@ -62,7 +62,7 @@ export function SignInForm({
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
                 <p className="text-muted-foreground text-balance">
-                  Sign in to your account
+                  Access your procurement dashboard
                 </p>
               </div>
               <div className="grid gap-3">
@@ -70,7 +70,7 @@ export function SignInForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="your.email@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -179,7 +179,7 @@ export function SignInForm({
         </CardContent>
       </Card>
       <div className="text-muted-foreground text-center text-xs text-balance">
-        By clicking continue, you agree to our{" "}
+        By signing in, you agree to our{" "}
         <Link href="/terms-of-service" className="underline underline-offset-4">
           Terms of Service
         </Link>{" "}

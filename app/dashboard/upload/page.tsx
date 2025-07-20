@@ -138,9 +138,11 @@ export default function UploadPage() {
   return (
     <div className="p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">File Upload</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Document Management
+        </h1>
         <p className="text-muted-foreground mt-2">
-          Upload images to Cloudflare R2 storage with drag and drop support
+          Upload and manage documents for your procurement activities
         </p>
       </div>
 
@@ -150,10 +152,11 @@ export default function UploadPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Upload className="h-5 w-5" />
-              Upload Images
+              Upload Documents
             </CardTitle>
             <CardDescription>
-              Upload images to Cloudflare R2. Maximum file size is 5MB.
+              Upload proposal documents, certifications, and supporting files.
+              Maximum file size is 5MB.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -185,7 +188,7 @@ export default function UploadPage() {
                       : "Click to upload or drag and drop"}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    PNG, JPG, GIF up to 5MB
+                    PDF, DOC, PNG, JPG up to 5MB
                   </p>
                 </div>
               </div>
@@ -206,9 +209,10 @@ export default function UploadPage() {
         {/* Upload Info */}
         <Card>
           <CardHeader>
-            <CardTitle>About R2 Storage</CardTitle>
+            <CardTitle>Secure Document Storage</CardTitle>
             <CardDescription>
-              Cloudflare R2 provides S3-compatible object storage
+              Your documents are stored securely with enterprise-grade
+              protection
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -216,33 +220,35 @@ export default function UploadPage() {
               <div className="flex items-start gap-3">
                 <Check className="h-4 w-4 text-green-500 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium">Global CDN</p>
+                  <p className="font-medium">Encrypted Storage</p>
+                  <p className="text-muted-foreground">End-to-end encryption</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="h-4 w-4 text-green-500 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium">Version Control</p>
                   <p className="text-muted-foreground">
-                    Fast delivery worldwide
+                    Track document changes
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="h-4 w-4 text-green-500 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium">Zero Egress Fees</p>
-                  <p className="text-muted-foreground">No bandwidth charges</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="h-4 w-4 text-green-500 mt-0.5" />
-                <div className="text-sm">
-                  <p className="font-medium">S3 Compatible</p>
+                  <p className="font-medium">Access Control</p>
                   <p className="text-muted-foreground">
-                    Works with existing tools
+                    Manage team permissions
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="h-4 w-4 text-green-500 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium">Auto Scaling</p>
-                  <p className="text-muted-foreground">Handles any file size</p>
+                  <p className="font-medium">Backup & Recovery</p>
+                  <p className="text-muted-foreground">
+                    Never lose important files
+                  </p>
                 </div>
               </div>
             </div>
@@ -254,10 +260,8 @@ export default function UploadPage() {
       {uploadedFiles.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Uploaded Files ({uploadedFiles.length})</CardTitle>
-            <CardDescription>
-              Recently uploaded images to R2 storage
-            </CardDescription>
+            <CardTitle>Document Library ({uploadedFiles.length})</CardTitle>
+            <CardDescription>Your uploaded documents and files</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
