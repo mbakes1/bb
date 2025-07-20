@@ -15,7 +15,6 @@ import {
   HelpCircle,
   HomeIcon,
   LucideIcon,
-  MessageCircleIcon,
   MessageSquare,
   Settings,
   Upload,
@@ -39,23 +38,18 @@ const navItems: NavItem[] = [
     icon: HomeIcon,
   },
   {
-    label: "Chat",
-    href: "/dashboard/chat",
-    icon: MessageCircleIcon,
-  },
-  {
     label: "Upload",
     href: "/dashboard/upload",
     icon: Upload,
   },
   {
     label: "Analytics",
-    href: "/dashboard/analytics",
+    href: "/dashboard/analytics-coming-soon",
     icon: BarChart3,
   },
   {
     label: "Team",
-    href: "/dashboard/team",
+    href: "/dashboard/team-coming-soon",
     icon: Users,
   },
 ];
@@ -71,12 +65,12 @@ const settingsItems: NavItem[] = [
 const supportItems: NavItem[] = [
   {
     label: "Support",
-    href: "/dashboard/support",
+    href: "/dashboard/support-coming-soon",
     icon: HelpCircle,
   },
   {
     label: "Feedback",
-    href: "/dashboard/feedback",
+    href: "/dashboard/feedback-coming-soon",
     icon: MessageSquare,
   },
 ];

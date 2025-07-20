@@ -12,14 +12,31 @@ import { usePathname } from "next/navigation";
 
 const routeLabels: Record<string, string> = {
   "/dashboard": "Overview",
-  "/dashboard/chat": "Chat",
   "/dashboard/upload": "Upload",
   "/dashboard/settings": "Settings",
 };
 
+// Function to generate breadcrumb label for coming-soon routes
+function getComingSoonLabel(pathname: string): string {
+  if (pathname.includes("-coming-soon")) {
+    const section =
+      pathname.split("/").pop()?.replace("-coming-soon", "") || "feature";
+    const featureName = section
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+    return `${featureName} - Coming Soon`;
+  }
+  return "Coming Soon";
+}
+
 export default function DynamicBreadcrumb() {
   const pathname = usePathname();
-  const currentLabel = routeLabels[pathname] || "Overview";
+  const currentLabel =
+    routeLabels[pathname] ||
+    (pathname.includes("coming-soon")
+      ? getComingSoonLabel(pathname)
+      : "Overview");
 
   return (
     <Breadcrumb>

@@ -19,19 +19,14 @@ import {
 import UserProfile from "@/components/user-profile";
 import {
   ChevronRight,
-  FileText,
   HelpCircle,
   HomeIcon,
   LucideIcon,
-  MessageCircleIcon,
   MessageSquare,
   Settings,
   Upload,
   Users,
   BarChart3,
-  Calendar,
-  Folder,
-  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -56,82 +51,19 @@ const navItems: NavItem[] = [
     icon: HomeIcon,
   },
   {
-    label: "Chat",
-    href: "/dashboard/chat",
-    icon: MessageCircleIcon,
-    subItems: [
-      {
-        label: "Recent Conversations",
-        href: "/dashboard/chat/recent",
-        icon: MessageSquare,
-      },
-      {
-        label: "Archived",
-        href: "/dashboard/chat/archived",
-        icon: Folder,
-      },
-      {
-        label: "Favorites",
-        href: "/dashboard/chat/favorites",
-        icon: Star,
-      },
-    ],
-  },
-  {
     label: "Upload",
     href: "/dashboard/upload",
     icon: Upload,
-    subItems: [
-      {
-        label: "Documents",
-        href: "/dashboard/upload/documents",
-        icon: FileText,
-      },
-      {
-        label: "Batch Upload",
-        href: "/dashboard/upload/batch",
-        icon: Upload,
-      },
-    ],
   },
   {
     label: "Analytics",
-    href: "/dashboard/analytics",
+    href: "/dashboard/analytics-coming-soon",
     icon: BarChart3,
-    subItems: [
-      {
-        label: "Reports",
-        href: "/dashboard/analytics/reports",
-        icon: FileText,
-      },
-      {
-        label: "Usage Stats",
-        href: "/dashboard/analytics/usage",
-        icon: BarChart3,
-      },
-      {
-        label: "Performance",
-        href: "/dashboard/analytics/performance",
-        icon: Calendar,
-      },
-    ],
   },
   {
     label: "Team",
-    href: "/dashboard/team",
+    href: "/dashboard/team-coming-soon",
     icon: Users,
-    subItems: [
-      {
-        label: "Members",
-        href: "/dashboard/team/members",
-        icon: Users,
-      },
-      {
-        label: "Invitations",
-        href: "/dashboard/team/invitations",
-        icon: MessageSquare,
-      },
-    ],
   },
 ];
 
@@ -146,12 +78,12 @@ const settingsItems: NavItem[] = [
 const supportItems: NavItem[] = [
   {
     label: "Support",
-    href: "/dashboard/support",
+    href: "/dashboard/support-coming-soon",
     icon: HelpCircle,
   },
   {
     label: "Feedback",
-    href: "/dashboard/feedback",
+    href: "/dashboard/feedback-coming-soon",
     icon: MessageSquare,
   },
 ];

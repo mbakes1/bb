@@ -12,13 +12,6 @@ A comprehensive, production-ready SaaS starter kit built with Next.js 15, featur
 - User profile management with image uploads
 - Account linking for multiple providers
 
-### 🤖 AI Integration
-
-- **OpenAI** powered chatbot
-- React Markdown rendering for rich responses
-- Multi-step conversation support
-- Integrated chat widget in dashboard
-
 ### 🎨 Modern UI/UX
 
 - **Tailwind CSS v4** - Latest utility-first styling
@@ -51,7 +44,6 @@ A comprehensive, production-ready SaaS starter kit built with Next.js 15, featur
 - **Database**: Neon PostgreSQL + Drizzle ORM
 - **Authentication**: Better Auth v1.2.8
 
-- **AI**: OpenAI SDK
 - **Storage**: Cloudflare R2
 - **Analytics**: PostHog
 - **Deployment**: Vercel (recommended)
@@ -63,7 +55,6 @@ A comprehensive, production-ready SaaS starter kit built with Next.js 15, featur
 │   ├── (auth)/              # Authentication pages
 │   ├── dashboard/           # Protected dashboard area
 │   │   ├── _components/     # Dashboard components
-│   │   ├── chat/           # AI chat interface
 │   │   ├── upload/         # File upload with R2
 │   │   └── settings/       # User settings
 │   └── api/                # API routes
@@ -86,8 +77,6 @@ A comprehensive, production-ready SaaS starter kit built with Next.js 15, featur
 - Node.js 18+
 - PostgreSQL database (Neon recommended)
 - Cloudflare R2 bucket for file storage
-
-- OpenAI API key for AI features
 - Google OAuth credentials (optional)
 
 ### Installation
@@ -118,9 +107,6 @@ GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
 
 
-
-# OpenAI
-OPENAI_API_KEY="your-openai-api-key"
 
 # Cloudflare R2 Storage
 CLOUDFLARE_ACCOUNT_ID="your-cloudflare-account-id"
@@ -155,12 +141,6 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) to see your application.
 
 ## 🎯 Key Features Explained
-
-### AI Chat Integration
-
-- Built-in chatbot with OpenAI
-- Markdown rendering for rich responses
-- Conversation history and context
 
 ### File Upload System
 

@@ -5,7 +5,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import Chatbot from "./_components/chatbot";
 import MobileNav from "./_components/mobile-nav";
 import { Separator } from "@/components/ui/separator";
 import UserProfile from "@/components/user-profile";
@@ -36,7 +35,6 @@ export default async function DashboardLayout({
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
       </SidebarInset>
-      <Chatbot />
     </SidebarProvider>
   );
 }
