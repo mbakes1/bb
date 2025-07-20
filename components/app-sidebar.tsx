@@ -27,6 +27,7 @@ import {
   Upload,
   Users,
   BarChart3,
+  FileText,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -49,6 +50,11 @@ const navItems: NavItem[] = [
     label: "Overview",
     href: "/dashboard",
     icon: HomeIcon,
+  },
+  {
+    label: "Tenders",
+    href: "/dashboard/tenders",
+    icon: FileText,
   },
   {
     label: "Upload",
