@@ -1,7 +1,15 @@
 import { ReactNode } from "react";
-import DashboardTopNav from "./_components/navbar";
-import DashboardSideBar from "./_components/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import Chatbot from "./_components/chatbot";
+import MobileNav from "./_components/mobile-nav";
+import { Separator } from "@/components/ui/separator";
+import UserProfile from "@/components/user-profile";
+import DynamicBreadcrumb from "./_components/dynamic-breadcrumb";
 
 export default async function DashboardLayout({
   children,
@@ -9,12 +17,26 @@ export default async function DashboardLayout({
   children: ReactNode;
 }) {
   return (
-    <div className="flex h-screen overflow-hidden w-full">
-      <DashboardSideBar />
-      <main className="flex-1 overflow-y-auto">
-        <DashboardTopNav>{children}</DashboardTopNav>
-      </main>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b">
+          <div className="flex items-center gap-2 px-4 flex-1">
+            <SidebarTrigger className="-ml-1 hidden md:flex" />
+            <MobileNav />
+            <Separator
+              orientation="vertical"
+              className="mr-2 h-4 hidden md:block"
+            />
+            <DynamicBreadcrumb />
+          </div>
+          <div className="flex items-center gap-2 px-4 md:hidden">
+            <UserProfile mini={true} />
+          </div>
+        </header>
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
+      </SidebarInset>
       <Chatbot />
-    </div>
+    </SidebarProvider>
   );
 }

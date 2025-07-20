@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +10,9 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
+import { ChevronsUpDown, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
@@ -83,12 +86,11 @@ export default function UserProfile({ mini }: { mini?: boolean }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <div
-          className={`flex gap-2 justify-start items-center w-full rounded ${
-            mini ? "" : "px-4 pt-2 pb-3"
-          }`}
+        <SidebarMenuButton
+          size="lg"
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <Avatar>
+          <Avatar className="h-8 w-8 rounded-lg">
             {loading ? (
               <div className="flex items-center justify-center w-full h-full">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -98,25 +100,49 @@ export default function UserProfile({ mini }: { mini?: boolean }) {
                 {userInfo?.image ? (
                   <AvatarImage src={userInfo?.image} alt="User Avatar" />
                 ) : (
-                  <AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
                     {userInfo?.name && userInfo.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 )}
               </>
             )}
           </Avatar>
-          {mini ? null : (
-            <div className="flex items-center gap-2">
-              <p className="font-medium text-md">
-                {loading ? "Loading..." : userInfo?.name || "User"}
-              </p>
-              {loading && <Loader2 className="h-3 w-3 animate-spin" />}
-            </div>
-          )}
-        </div>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold">
+              {loading ? "Loading..." : userInfo?.name || "User"}
+            </span>
+            <span className="truncate text-xs">
+              {loading ? "" : userInfo?.email || ""}
+            </span>
+          </div>
+          <ChevronsUpDown className="ml-auto size-4" />
+        </SidebarMenuButton>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+      <DropdownMenuContent
+        className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+        side="bottom"
+        align="end"
+        sideOffset={4}
+      >
+        <DropdownMenuLabel className="p-0 font-normal">
+          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+            <Avatar className="h-8 w-8 rounded-lg">
+              {userInfo?.image ? (
+                <AvatarImage src={userInfo?.image} alt="User Avatar" />
+              ) : (
+                <AvatarFallback className="rounded-lg">
+                  {userInfo?.name && userInfo.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">
+                {userInfo?.name || "User"}
+              </span>
+              <span className="truncate text-xs">{userInfo?.email || ""}</span>
+            </div>
+          </div>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href="/dashboard/settings?tab=profile">
