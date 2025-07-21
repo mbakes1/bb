@@ -7,11 +7,6 @@ export const metadata: Metadata = {
   title: "BidBase - Discover & Manage RFQs and RFPs",
   description:
     "Navigate procurement opportunities with confidence. BidBase helps business owners and organizations discover, track, and manage RFQs and RFPs efficiently.",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
   openGraph: {
     title: "BidBase - Procurement Opportunity Management",
     description:
@@ -29,6 +24,12 @@ export const metadata: Metadata = {
     locale: "en-US",
     type: "website",
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
