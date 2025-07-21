@@ -10,13 +10,8 @@ import {
   desc,
   asc,
   isNotNull,
-  eq,
 } from "drizzle-orm";
-import type {
-  TenderFilters,
-  FilterStats,
-  TenderSearchParams,
-} from "@/types/filters";
+import type { FilterStats, TenderSearchParams } from "@/types/filters";
 
 export async function buildTenderQuery(searchParams: TenderSearchParams) {
   const {
@@ -69,8 +64,15 @@ export async function buildTenderQuery(searchParams: TenderSearchParams) {
   }
 
   // Tender Value Range filter
-  if (filters.valueMin !== undefined || filters.valueMax !== undefined) {
+  if (
+    filters.valueMin !== undefined ||
+    filters.valueMax !== undefined ||
+    filters.valueCurrency
+  ) {
     const valueConditions = [];
+
+    // Only apply value filters if we have a value field
+    valueConditions.push(isNotNull(tenders.value));
 
     if (filters.valueMin !== undefined) {
       valueConditions.push(
@@ -115,11 +117,11 @@ export async function buildTenderQuery(searchParams: TenderSearchParams) {
   // Status filter
   if (filters.status === "active") {
     whereConditions.push(
-      or(gte(tenders.endDate, new Date()), eq(tenders.status, "active"))
+      or(gte(tenders.endDate, new Date()), sql`${tenders.status} = 'active'`)
     );
   } else if (filters.status === "closed") {
     whereConditions.push(
-      or(lte(tenders.endDate, new Date()), eq(tenders.status, "closed"))
+      or(lte(tenders.endDate, new Date()), sql`${tenders.status} = 'closed'`)
     );
   }
 
@@ -215,13 +217,19 @@ export async function getFilterStats(): Promise<FilterStats> {
         .select({ count: sql<number>`count(*)` })
         .from(tenders)
         .where(
-          or(gte(tenders.endDate, new Date()), eq(tenders.status, "active"))
+          or(
+            gte(tenders.endDate, new Date()),
+            sql`${tenders.status} = 'active'`
+          )
         ),
       db
         .select({ count: sql<number>`count(*)` })
         .from(tenders)
         .where(
-          or(lte(tenders.endDate, new Date()), eq(tenders.status, "closed"))
+          or(
+            lte(tenders.endDate, new Date()),
+            sql`${tenders.status} = 'closed'`
+          )
         ),
     ]);
 

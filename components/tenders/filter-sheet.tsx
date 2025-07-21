@@ -35,8 +35,12 @@ import {
   Building2,
   Calendar as CalendarIcon,
   DollarSign,
-  X,
   RotateCcw,
+  FileText,
+  Clock,
+  TrendingUp,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -124,7 +128,7 @@ export function FilterSheet({
           Advanced Filters
           {activeFilterCount > 0 && (
             <Badge
-              variant="secondary"
+              variant="default"
               className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
             >
               {activeFilterCount}
@@ -132,24 +136,32 @@ export function FilterSheet({
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[400px] sm:w-[540px]">
-        <SheetHeader>
-          <SheetTitle>Filter Opportunities</SheetTitle>
-          <SheetDescription>
-            Refine your search with advanced filtering options
+      <SheetContent className="w-[500px] sm:w-[650px] lg:w-[750px]">
+        <SheetHeader className="pb-6">
+          <SheetTitle className="text-xl flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filter Opportunities
+          </SheetTitle>
+          <SheetDescription className="text-base">
+            Use advanced filters to find the most relevant procurement
+            opportunities for your business
           </SheetDescription>
         </SheetHeader>
 
-        <ScrollArea className="h-[calc(100vh-120px)] pr-4">
-          <div className="space-y-6 py-4">
+        <ScrollArea className="h-[calc(100vh-180px)] pr-4">
+          <div className="space-y-8 pb-6">
             {/* Keyword Search */}
-            <div className="space-y-2">
-              <Label htmlFor="keyword">Keyword Search</Label>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Search className="h-5 w-5 text-primary" />
+                <Label className="text-base font-semibold">
+                  Keyword Search
+                </Label>
+              </div>
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  id="keyword"
-                  placeholder="Search titles and descriptions..."
+                  placeholder="Search in titles and descriptions..."
                   value={localFilters.keyword || ""}
                   onChange={(e) =>
                     setLocalFilters((prev) => ({
@@ -157,42 +169,65 @@ export function FilterSheet({
                       keyword: e.target.value || undefined,
                     }))
                   }
-                  className="pl-10"
+                  className="pl-10 h-11"
                 />
               </div>
+              <p className="text-sm text-muted-foreground">
+                Search across tender titles and descriptions for relevant
+                keywords
+              </p>
             </div>
 
             <Separator />
 
             {/* Status Filter */}
-            <div className="space-y-2">
-              <Label>Tender Status</Label>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                <Label className="text-base font-semibold">Tender Status</Label>
+              </div>
               <Select
-                value={localFilters.status || "all"}
+                value={localFilters.status || "active"}
                 onValueChange={(value: "active" | "closed" | "all") =>
                   setLocalFilters((prev) => ({ ...prev, status: value }))
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Tenders</SelectItem>
+                  <SelectItem value="all">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      All Tenders
+                      {filterStats && (
+                        <Badge variant="outline" className="ml-2">
+                          {filterStats.totalCount}
+                        </Badge>
+                      )}
+                    </div>
+                  </SelectItem>
                   <SelectItem value="active">
-                    Active Only
-                    {filterStats && (
-                      <span className="ml-2 text-muted-foreground">
-                        ({filterStats.activeCount})
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      Active Only
+                      {filterStats && (
+                        <Badge variant="outline" className="ml-2">
+                          {filterStats.activeCount}
+                        </Badge>
+                      )}
+                    </div>
                   </SelectItem>
                   <SelectItem value="closed">
-                    Closed Only
-                    {filterStats && (
-                      <span className="ml-2 text-muted-foreground">
-                        ({filterStats.closedCount})
-                      </span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <XCircle className="h-4 w-4 text-red-600" />
+                      Closed Only
+                      {filterStats && (
+                        <Badge variant="outline" className="ml-2">
+                          {filterStats.closedCount}
+                        </Badge>
+                      )}
+                    </div>
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -201,13 +236,18 @@ export function FilterSheet({
             <Separator />
 
             {/* Procuring Entity Filter */}
-            <div className="space-y-2">
-              <Label>Procuring Entity</Label>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {filterStats?.procuringEntities.map((entity) => (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-primary" />
+                <Label className="text-base font-semibold">
+                  Procuring Entity
+                </Label>
+              </div>
+              <div className="grid grid-cols-1 gap-3 max-h-60 overflow-y-auto border rounded-lg p-4">
+                {filterStats?.procuringEntities.slice(0, 20).map((entity) => (
                   <div
                     key={entity.value}
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-3"
                   >
                     <Checkbox
                       id={`entity-${entity.value}`}
@@ -236,88 +276,106 @@ export function FilterSheet({
                     />
                     <Label
                       htmlFor={`entity-${entity.value}`}
-                      className="text-sm font-normal cursor-pointer flex-1"
+                      className="text-sm font-normal cursor-pointer flex-1 flex items-center justify-between"
                     >
-                      <div className="flex items-center justify-between">
-                        <span>{entity.label}</span>
-                        {entity.count && (
-                          <Badge variant="outline" className="text-xs">
-                            {entity.count}
-                          </Badge>
-                        )}
-                      </div>
+                      <span className="truncate">{entity.label}</span>
+                      {entity.count && (
+                        <Badge variant="secondary" className="text-xs ml-2">
+                          {entity.count}
+                        </Badge>
+                      )}
                     </Label>
                   </div>
                 ))}
+                {!filterStats?.procuringEntities.length && (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No procuring entities available
+                  </p>
+                )}
               </div>
             </div>
 
             <Separator />
 
             {/* Procurement Category Filter */}
-            <div className="space-y-2">
-              <Label>Procurement Category</Label>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {filterStats?.procurementCategories.map((category) => (
-                  <div
-                    key={category.value}
-                    className="flex items-center space-x-2"
-                  >
-                    <Checkbox
-                      id={`category-${category.value}`}
-                      checked={
-                        localFilters.procurementCategory?.includes(
-                          category.value
-                        ) || false
-                      }
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setLocalFilters((prev) => ({
-                            ...prev,
-                            procurementCategory: [
-                              ...(prev.procurementCategory || []),
-                              category.value,
-                            ],
-                          }));
-                        } else {
-                          setLocalFilters((prev) => ({
-                            ...prev,
-                            procurementCategory:
-                              prev.procurementCategory?.filter(
-                                (c) => c !== category.value
-                              ),
-                          }));
-                        }
-                      }}
-                    />
-                    <Label
-                      htmlFor={`category-${category.value}`}
-                      className="text-sm font-normal cursor-pointer flex-1"
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                <Label className="text-base font-semibold">
+                  Procurement Category
+                </Label>
+              </div>
+              <div className="grid grid-cols-1 gap-3 max-h-60 overflow-y-auto border rounded-lg p-4">
+                {filterStats?.procurementCategories
+                  .slice(0, 20)
+                  .map((category) => (
+                    <div
+                      key={category.value}
+                      className="flex items-center space-x-3"
                     >
-                      <div className="flex items-center justify-between">
-                        <span>{category.label}</span>
+                      <Checkbox
+                        id={`category-${category.value}`}
+                        checked={
+                          localFilters.procurementCategory?.includes(
+                            category.value
+                          ) || false
+                        }
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setLocalFilters((prev) => ({
+                              ...prev,
+                              procurementCategory: [
+                                ...(prev.procurementCategory || []),
+                                category.value,
+                              ],
+                            }));
+                          } else {
+                            setLocalFilters((prev) => ({
+                              ...prev,
+                              procurementCategory:
+                                prev.procurementCategory?.filter(
+                                  (c) => c !== category.value
+                                ),
+                            }));
+                          }
+                        }}
+                      />
+                      <Label
+                        htmlFor={`category-${category.value}`}
+                        className="text-sm font-normal cursor-pointer flex-1 flex items-center justify-between"
+                      >
+                        <span className="truncate">{category.label}</span>
                         {category.count && (
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="secondary" className="text-xs ml-2">
                             {category.count}
                           </Badge>
                         )}
-                      </div>
-                    </Label>
-                  </div>
-                ))}
+                      </Label>
+                    </div>
+                  ))}
+                {!filterStats?.procurementCategories.length && (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No procurement categories available
+                  </p>
+                )}
               </div>
             </div>
 
             <Separator />
 
             {/* Procurement Method Filter */}
-            <div className="space-y-2">
-              <Label>Procurement Method</Label>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {filterStats?.procurementMethods.map((method) => (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <Label className="text-base font-semibold">
+                  Procurement Method
+                </Label>
+              </div>
+              <div className="grid grid-cols-1 gap-3 max-h-60 overflow-y-auto border rounded-lg p-4">
+                {filterStats?.procurementMethods.slice(0, 20).map((method) => (
                   <div
                     key={method.value}
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-3"
                   >
                     <Checkbox
                       id={`method-${method.value}`}
@@ -347,28 +405,36 @@ export function FilterSheet({
                     />
                     <Label
                       htmlFor={`method-${method.value}`}
-                      className="text-sm font-normal cursor-pointer flex-1"
+                      className="text-sm font-normal cursor-pointer flex-1 flex items-center justify-between"
                     >
-                      <div className="flex items-center justify-between">
-                        <span>{method.label}</span>
-                        {method.count && (
-                          <Badge variant="outline" className="text-xs">
-                            {method.count}
-                          </Badge>
-                        )}
-                      </div>
+                      <span className="truncate">{method.label}</span>
+                      {method.count && (
+                        <Badge variant="secondary" className="text-xs ml-2">
+                          {method.count}
+                        </Badge>
+                      )}
                     </Label>
                   </div>
                 ))}
+                {!filterStats?.procurementMethods.length && (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No procurement methods available
+                  </p>
+                )}
               </div>
             </div>
 
             <Separator />
 
             {/* Tender Value Range */}
-            <div className="space-y-2">
-              <Label>Tender Value Range</Label>
-              <div className="space-y-3">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-primary" />
+                <Label className="text-base font-semibold">
+                  Tender Value Range
+                </Label>
+              </div>
+              <div className="space-y-4">
                 <Select
                   value={localFilters.valueCurrency || "ZAR"}
                   onValueChange={(value) =>
@@ -378,7 +444,7 @@ export function FilterSheet({
                     }))
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -389,13 +455,10 @@ export function FilterSheet({
                     ))}
                   </SelectContent>
                 </Select>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label htmlFor="valueMin" className="text-xs">
-                      Minimum
-                    </Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Minimum Value</Label>
                     <Input
-                      id="valueMin"
                       type="number"
                       placeholder="0"
                       value={localFilters.valueMin || ""}
@@ -407,14 +470,12 @@ export function FilterSheet({
                             : undefined,
                         }))
                       }
+                      className="h-11"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="valueMax" className="text-xs">
-                      Maximum
-                    </Label>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Maximum Value</Label>
                     <Input
-                      id="valueMax"
                       type="number"
                       placeholder="No limit"
                       value={localFilters.valueMax || ""}
@@ -426,6 +487,7 @@ export function FilterSheet({
                             : undefined,
                         }))
                       }
+                      className="h-11"
                     />
                   </div>
                 </div>
@@ -435,9 +497,12 @@ export function FilterSheet({
             <Separator />
 
             {/* Closing Date Filter */}
-            <div className="space-y-2">
-              <Label>Closing Date</Label>
-              <div className="space-y-3">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                <Label className="text-base font-semibold">Closing Date</Label>
+              </div>
+              <div className="space-y-4">
                 <div className="flex flex-wrap gap-2">
                   {CLOSING_DATE_PRESETS.map((preset) => (
                     <Button
@@ -445,20 +510,21 @@ export function FilterSheet({
                       variant="outline"
                       size="sm"
                       onClick={() => handleClosingDatePreset(preset.days)}
+                      className="h-9"
                     >
                       {preset.label}
                     </Button>
                   ))}
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-xs">From Date</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">From Date</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-start text-left font-normal",
+                            "w-full justify-start text-left font-normal h-11",
                             !localFilters.closingDateFrom &&
                               "text-muted-foreground"
                           )}
@@ -486,14 +552,14 @@ export function FilterSheet({
                       </PopoverContent>
                     </Popover>
                   </div>
-                  <div>
-                    <Label className="text-xs">To Date</Label>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">To Date</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
                           className={cn(
-                            "w-full justify-start text-left font-normal",
+                            "w-full justify-start text-left font-normal h-11",
                             !localFilters.closingDateTo &&
                               "text-muted-foreground"
                           )}
@@ -535,17 +601,22 @@ export function FilterSheet({
             <Separator />
 
             {/* Published Date Filter */}
-            <div className="space-y-2">
-              <Label>Published Date Range</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label className="text-xs">From Date</Label>
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5 text-primary" />
+                <Label className="text-base font-semibold">
+                  Published Date Range
+                </Label>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">From Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal",
+                          "w-full justify-start text-left font-normal h-11",
                           !localFilters.publishedDateFrom &&
                             "text-muted-foreground"
                         )}
@@ -573,14 +644,14 @@ export function FilterSheet({
                     </PopoverContent>
                   </Popover>
                 </div>
-                <div>
-                  <Label className="text-xs">To Date</Label>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">To Date</Label>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal",
+                          "w-full justify-start text-left font-normal h-11",
                           !localFilters.publishedDateTo &&
                             "text-muted-foreground"
                         )}
@@ -622,25 +693,36 @@ export function FilterSheet({
         </ScrollArea>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t">
+        <div className="flex items-center justify-between pt-6 border-t bg-background">
           <Button
             variant="outline"
             onClick={handleResetFilters}
             disabled={isLoading}
+            className="h-11"
           >
             <RotateCcw className="mr-2 h-4 w-4" />
             Reset All
           </Button>
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button
               variant="outline"
               onClick={() => setIsOpen(false)}
               disabled={isLoading}
+              className="h-11"
             >
               Cancel
             </Button>
-            <Button onClick={handleApplyFilters} disabled={isLoading}>
+            <Button
+              onClick={handleApplyFilters}
+              disabled={isLoading}
+              className="h-11 min-w-[120px]"
+            >
               Apply Filters
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {activeFilterCount}
+                </Badge>
+              )}
             </Button>
           </div>
         </div>

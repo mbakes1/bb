@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import {
   Card,
   CardContent,
@@ -10,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
   SelectContent,
@@ -23,7 +21,6 @@ import {
   Building2,
   FileText,
   RefreshCw,
-  AlertTriangle,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
@@ -31,7 +28,7 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FilterSheet } from "@/components/tenders/filter-sheet";
+import { FiltersSection } from "@/components/tenders/filters-section";
 import { serializeFiltersToParams } from "@/lib/url-params";
 import type { TenderFilters, FilterStats } from "@/types/filters";
 
@@ -157,90 +154,32 @@ export function TendersListComponent({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Opportunities</h1>
-            <p className="text-muted-foreground">
-              Discover and track procurement opportunities that match your
-              business
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <FilterSheet
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-              filterStats={filterStats}
-            />
-            <Button onClick={() => router.refresh()}>
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
-            </Button>
-          </div>
+      {/* Page Header - Mobile Optimized */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Opportunities
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Discover and track procurement opportunities that match your
+            business
+          </p>
         </div>
-
-        {/* Active Filters Summary */}
-        {(filters.keyword ||
-          filters.procuringEntity?.length ||
-          filters.procurementCategory?.length ||
-          filters.procurementMethod?.length ||
-          filters.valueMin !== undefined ||
-          filters.valueMax !== undefined ||
-          filters.closingDateFrom ||
-          filters.closingDateTo ||
-          filters.publishedDateFrom ||
-          filters.publishedDateTo ||
-          (filters.status && filters.status !== "all")) && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex flex-wrap gap-2">
-                {filters.keyword && (
-                  <Badge variant="secondary">
-                    Keyword: "{filters.keyword}"
-                  </Badge>
-                )}
-                {filters.procuringEntity?.map((entity) => (
-                  <Badge key={entity} variant="secondary">
-                    Entity: {entity}
-                  </Badge>
-                ))}
-                {filters.procurementCategory?.map((category) => (
-                  <Badge key={category} variant="secondary">
-                    Category: {category}
-                  </Badge>
-                ))}
-                {filters.procurementMethod?.map((method) => (
-                  <Badge key={method} variant="secondary">
-                    Method: {method}
-                  </Badge>
-                ))}
-                {(filters.valueMin !== undefined ||
-                  filters.valueMax !== undefined) && (
-                  <Badge variant="secondary">
-                    Value: {filters.valueMin || 0} - {filters.valueMax || "∞"}{" "}
-                    {filters.valueCurrency || "ZAR"}
-                  </Badge>
-                )}
-                {(filters.closingDateFrom || filters.closingDateTo) && (
-                  <Badge variant="secondary">
-                    Closing: {filters.closingDateFrom?.toLocaleDateString()} -{" "}
-                    {filters.closingDateTo?.toLocaleDateString()}
-                  </Badge>
-                )}
-                {(filters.publishedDateFrom || filters.publishedDateTo) && (
-                  <Badge variant="secondary">
-                    Published: {filters.publishedDateFrom?.toLocaleDateString()}{" "}
-                    - {filters.publishedDateTo?.toLocaleDateString()}
-                  </Badge>
-                )}
-                {filters.status && filters.status !== "all" && (
-                  <Badge variant="secondary">Status: {filters.status}</Badge>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <Button
+          onClick={() => router.refresh()}
+          className="self-start sm:self-auto"
+        >
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh
+        </Button>
       </div>
+
+      {/* Filters Section */}
+      <FiltersSection
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+        filterStats={filterStats}
+      />
 
       {/* Results */}
       {tenders.length === 0 ? (
@@ -261,15 +200,16 @@ export function TendersListComponent({
         </Card>
       ) : (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          {/* Results Header - Mobile Optimized */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <p className="text-sm text-muted-foreground">
               Found {totalCount} opportunit{totalCount !== 1 ? "ies" : "y"}
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Sort by:</span>
                 <Select value={sortBy} onValueChange={handleSortChange}>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger className="w-full sm:w-[140px] h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -294,7 +234,7 @@ export function TendersListComponent({
                   </SelectContent>
                 </Select>
               </div>
-              <Badge variant="secondary">
+              <Badge variant="secondary" className="self-start sm:self-center">
                 Page {currentPage} of {totalPages}
               </Badge>
             </div>
@@ -312,13 +252,16 @@ export function TendersListComponent({
                 <Link
                   href={`/dashboard/tenders/${encodeURIComponent(tender.ocid)}`}
                 >
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <CardTitle className="text-xl">
+                  <CardHeader className="pb-4">
+                    <div className="space-y-3">
+                      {/* Title and Status Row - Mobile Optimized */}
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-lg sm:text-xl leading-tight break-words">
                             {tender.title}
                           </CardTitle>
+                        </div>
+                        <div className="flex flex-col gap-2 flex-shrink-0">
                           <Badge
                             variant={isActive ? "default" : "secondary"}
                             className={cn(
@@ -330,66 +273,95 @@ export function TendersListComponent({
                           >
                             {status.toUpperCase()}
                           </Badge>
+                          <Badge variant="outline" className="text-xs">
+                            {tender.procurementMethodDetails ||
+                              tender.procurementMethod ||
+                              "N/A"}
+                          </Badge>
                         </div>
-                        <CardDescription className="line-clamp-2">
-                          {tender.description || "No description available"}
-                        </CardDescription>
                       </div>
-                      <Badge variant="outline" className="ml-4">
-                        {tender.procurementMethodDetails ||
-                          tender.procurementMethod ||
-                          "N/A"}
-                      </Badge>
+
+                      {/* Description */}
+                      <CardDescription className="line-clamp-3 text-sm leading-relaxed">
+                        {tender.description || "No description available"}
+                      </CardDescription>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">Procuring Entity:</span>
-                        <span className="truncate">
-                          {tender.procuringEntity?.name || "N/A"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">Closing:</span>
-                        <span
-                          className={cn(
-                            "truncate",
-                            tender.endDate && tender.endDate < new Date()
-                              ? "text-red-600"
-                              : tender.endDate &&
-                                tender.endDate <
-                                  new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-                              ? "text-orange-600"
-                              : ""
-                          )}
-                        >
-                          {formatDate(tender.endDate)}
-                        </span>
-                      </div>
-                      {tender.value?.amount && (
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">Value:</span>
-                          <span className="truncate">
-                            {formatCurrency(
-                              tender.value.amount,
-                              tender.value.currency
-                            )}
+                  <CardContent className="pt-0">
+                    {/* Info Grid - Mobile Optimized */}
+                    <div className="space-y-3 text-sm">
+                      {/* Procuring Entity */}
+                      <div className="flex items-start gap-2">
+                        <Building2 className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <span className="font-medium text-muted-foreground">
+                            Procuring Entity:
                           </span>
+                          <div className="break-words">
+                            {tender.procuringEntity?.name || "N/A"}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Closing Date */}
+                      <div className="flex items-start gap-2">
+                        <CalendarDays className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <span className="font-medium text-muted-foreground">
+                            Closing Date:
+                          </span>
+                          <div
+                            className={cn(
+                              "break-words",
+                              tender.endDate && tender.endDate < new Date()
+                                ? "text-red-600 font-medium"
+                                : tender.endDate &&
+                                  tender.endDate <
+                                    new Date(
+                                      Date.now() + 7 * 24 * 60 * 60 * 1000
+                                    )
+                                ? "text-orange-600 font-medium"
+                                : ""
+                            )}
+                          >
+                            {formatDate(tender.endDate)}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Value */}
+                      {tender.value?.amount && (
+                        <div className="flex items-start gap-2">
+                          <span className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0">
+                            💰
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <span className="font-medium text-muted-foreground">
+                              Value:
+                            </span>
+                            <div className="break-words font-medium">
+                              {formatCurrency(
+                                tender.value.amount,
+                                tender.value.currency
+                              )}
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
+
+                    {/* Category Badge */}
                     {tender.mainProcurementCategory && (
-                      <div className="mt-3">
+                      <div className="mt-4">
                         <Badge variant="outline" className="text-xs">
                           {tender.mainProcurementCategory}
                         </Badge>
                       </div>
                     )}
-                    <div className="mt-4 flex items-center justify-between">
-                      <div className="text-xs text-muted-foreground">
+
+                    {/* Footer Info - Mobile Stacked */}
+                    <div className="mt-4 pt-3 border-t space-y-1 sm:flex sm:items-center sm:justify-between sm:space-y-0">
+                      <div className="text-xs text-muted-foreground break-all">
                         OCID: {tender.ocid}
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -402,25 +374,30 @@ export function TendersListComponent({
             );
           })}
 
-          {/* Pagination */}
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
+          {/* Pagination - Mobile Optimized */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="text-sm text-muted-foreground text-center sm:text-left">
               Page {currentPage} of {totalPages} • {totalCount} total results
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage <= 1}
+                className="h-10 px-4"
               >
                 Previous
               </Button>
+              <div className="flex items-center px-3 py-2 text-sm font-medium bg-muted rounded-md">
+                {currentPage}
+              </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages}
+                className="h-10 px-4"
               >
                 Next
               </Button>
