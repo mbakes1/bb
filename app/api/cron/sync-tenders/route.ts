@@ -8,11 +8,11 @@ const OCDS_API_BASE = "https://ocds-api.etenders.gov.za/api/OCDSReleases";
 
 // This function can be called by a Vercel Cron Job
 export async function GET() {
-  // Fetch tenders from the last day to keep data fresh
+  // Fetch tenders from the last 2 days since we run daily
   const today = new Date();
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-  const dateFrom = yesterday.toISOString().split("T")[0]; // YYYY-MM-DD
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(today.getDate() - 2);
+  const dateFrom = twoDaysAgo.toISOString().split("T")[0]; // YYYY-MM-DD
   const dateTo = today.toISOString().split("T")[0]; // YYYY-MM-DD
 
   try {
@@ -29,7 +29,7 @@ export async function GET() {
     if (releases.length === 0) {
       return NextResponse.json({
         success: true,
-        message: "No new tenders to sync.",
+        message: "No new tenders to sync from the last 2 days.",
       });
     }
 

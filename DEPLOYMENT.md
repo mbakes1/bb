@@ -14,14 +14,15 @@
 4. ✅ Enhanced pagination and results display
 5. ✅ Proper viewport configuration
 6. ✅ Touch-friendly UI components
-7. ✅ Cron job for tender synchronization (runs hourly)
+7. ✅ Cron job for tender synchronization (runs daily)
 
 ## Cron Job Configuration
 
 - **Endpoint**: `/api/cron/sync-tenders`
-- **Schedule**: `0 * * * *` (every hour)
-- **Function**: Syncs tender data from OCDS API
+- **Schedule**: `0 2 * * *` (daily at 2:00 AM UTC)
+- **Function**: Syncs tender data from OCDS API (last 2 days)
 - **Status**: Active and configured in vercel.json
+- **Vercel Limit**: Hobby accounts limited to daily cron jobs
 
 ## Mobile Optimizations
 
