@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const OCDS_API_BASE = "https://ocds-api.etenders.gov.za/api/OCDSReleases";
+import { db } from "@/db/drizzle";
+import { tenders, tenderDocuments } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
@@ -12,40 +13,59 @@ export async function GET(
       throw new Error("OCID parameter is required");
     }
 
-    const targetUrl = `${OCDS_API_BASE}/release/${encodeURIComponent(ocid)}`;
+    // Fetch the tender and its documents from Neon database
+    const [tenderResults, documentsData] = await Promise.all([
+      db.select().from(tenders).where(eq(tenders.ocid, ocid)).limit(1),
+      db
+        .select()
+        .from(tenderDocuments)
+        .where(eq(tenderDocuments.tenderOcid, ocid)),
+    ]);
 
-    const response = await fetch(targetUrl, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+    const tenderData = tenderResults[0];
+
+    if (!tenderData) {
+      return NextResponse.json(
+        {
+          error: "Tender not found",
+          details: `No tender found with OCID: ${ocid}`,
+        },
+        { status: 404 }
+      );
+    }
+
+    // Transform to match the original OCDS API format
+    const release = {
+      ocid: tenderData.ocid,
+      id: tenderData.id,
+      date: tenderData.publishedDate?.toISOString(),
+      tender: {
+        id: tenderData.id,
+        title: tenderData.title,
+        description: tenderData.description,
+        procurementMethod: tenderData.procurementMethod,
+        procurementMethodDetails: tenderData.procurementMethodDetails,
+        mainProcurementCategory: tenderData.mainProcurementCategory,
+        tenderPeriod: {
+          startDate: tenderData.startDate?.toISOString(),
+          endDate: tenderData.endDate?.toISOString(),
+        },
+        procuringEntity: tenderData.procuringEntity,
+        value: tenderData.value,
+        documents: documentsData.map((doc) => ({
+          id: doc.documentId,
+          title: doc.title,
+          description: doc.description,
+          url: doc.url,
+          format: doc.format,
+          datePublished: doc.datePublished?.toISOString(),
+          dateModified: doc.dateModified?.toISOString(),
+        })),
       },
-    });
+      buyer: tenderData.procuringEntity,
+    };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-
-      if (response.status === 404) {
-        return NextResponse.json(
-          {
-            error: "Tender not found",
-            details: `No tender found with OCID: ${ocid}`,
-          },
-          { status: 404 }
-        );
-      }
-
-      throw new Error(`OCDS API error: ${response.status} - ${errorText}`);
-    }
-
-    const data = await response.json();
-
-    // Validate that we received valid data
-    if (!data) {
-      throw new Error("No data received from OCDS API");
-    }
-
-    return NextResponse.json(data, {
+    return NextResponse.json(release, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
