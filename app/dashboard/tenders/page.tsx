@@ -1,67 +1,124 @@
-// REMOVED "use client" - This is now a Server Component!
-import { db } from "@/db/drizzle";
-import { tenders } from "@/db/schema";
 import { TendersListComponent } from "./_components/tenders-list";
-import { desc, sql, and, gte, lte } from "drizzle-orm";
+import { buildTenderQuery, getFilterStats } from "@/lib/tender-filters";
+import type { TenderFilters } from "@/types/filters";
+
+function parseSearchParams(searchParams: {
+  [key: string]: string | string[] | undefined;
+}): TenderFilters {
+  const filters: TenderFilters = {};
+
+  // Parse keyword
+  if (searchParams.keyword && typeof searchParams.keyword === "string") {
+    filters.keyword = searchParams.keyword;
+  }
+
+  // Parse arrays (procuring entities, categories, methods)
+  if (searchParams.procuringEntity) {
+    filters.procuringEntity = Array.isArray(searchParams.procuringEntity)
+      ? searchParams.procuringEntity
+      : [searchParams.procuringEntity];
+  }
+
+  if (searchParams.procurementCategory) {
+    filters.procurementCategory = Array.isArray(
+      searchParams.procurementCategory
+    )
+      ? searchParams.procurementCategory
+      : [searchParams.procurementCategory];
+  }
+
+  if (searchParams.procurementMethod) {
+    filters.procurementMethod = Array.isArray(searchParams.procurementMethod)
+      ? searchParams.procurementMethod
+      : [searchParams.procurementMethod];
+  }
+
+  // Parse value range
+  if (searchParams.valueMin && typeof searchParams.valueMin === "string") {
+    filters.valueMin = Number(searchParams.valueMin);
+  }
+  if (searchParams.valueMax && typeof searchParams.valueMax === "string") {
+    filters.valueMax = Number(searchParams.valueMax);
+  }
+  if (
+    searchParams.valueCurrency &&
+    typeof searchParams.valueCurrency === "string"
+  ) {
+    filters.valueCurrency = searchParams.valueCurrency;
+  }
+
+  // Parse dates
+  if (
+    searchParams.closingDateFrom &&
+    typeof searchParams.closingDateFrom === "string"
+  ) {
+    filters.closingDateFrom = new Date(searchParams.closingDateFrom);
+  }
+  if (
+    searchParams.closingDateTo &&
+    typeof searchParams.closingDateTo === "string"
+  ) {
+    filters.closingDateTo = new Date(searchParams.closingDateTo);
+  }
+  if (
+    searchParams.publishedDateFrom &&
+    typeof searchParams.publishedDateFrom === "string"
+  ) {
+    filters.publishedDateFrom = new Date(searchParams.publishedDateFrom);
+  }
+  if (
+    searchParams.publishedDateTo &&
+    typeof searchParams.publishedDateTo === "string"
+  ) {
+    filters.publishedDateTo = new Date(searchParams.publishedDateTo);
+  }
+
+  // Parse status
+  if (searchParams.status && typeof searchParams.status === "string") {
+    filters.status = searchParams.status as "active" | "closed" | "all";
+  } else {
+    // Default to active tenders
+    filters.status = "active";
+  }
+
+  return filters;
+}
 
 export default async function TendersPage({
   searchParams,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  // Get search parameters
   const page = Number(searchParams.page) || 1;
   const limit = 20;
-  const offset = (page - 1) * limit;
+  const sortBy =
+    (searchParams.sortBy as "publishedDate" | "endDate" | "value") ||
+    "publishedDate";
+  const sortOrder = (searchParams.sortOrder as "asc" | "desc") || "desc";
 
-  // Get date filters from search params or set defaults
-  const getDefaultDates = () => {
-    const today = new Date();
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(today.getMonth() - 6);
-    return { from: sixMonthsAgo, to: today };
-  };
+  const filters = parseSearchParams(searchParams);
 
-  const defaultDates = getDefaultDates();
-  const dateFrom = searchParams.dateFrom
-    ? new Date(searchParams.dateFrom as string)
-    : defaultDates.from;
-  const dateTo = searchParams.dateTo
-    ? new Date(searchParams.dateTo as string)
-    : defaultDates.to;
-
-  // Build where conditions
-  const whereConditions = [];
-  if (dateFrom) {
-    whereConditions.push(gte(tenders.publishedDate, dateFrom));
-  }
-  if (dateTo) {
-    whereConditions.push(lte(tenders.publishedDate, dateTo));
-  }
-
-  // Fetch data directly from Neon on the server
-  const [tendersData, totalCountResult] = await Promise.all([
-    db
-      .select()
-      .from(tenders)
-      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-      .orderBy(desc(tenders.publishedDate)) // Sort by newest
-      .limit(limit)
-      .offset(offset),
-    db
-      .select({ count: sql<number>`count(*)` })
-      .from(tenders)
-      .where(whereConditions.length > 0 ? and(...whereConditions) : undefined),
+  // Fetch data and filter stats in parallel
+  const [queryResult, filterStats] = await Promise.all([
+    buildTenderQuery({
+      filters,
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+    }),
+    getFilterStats(),
   ]);
 
-  const totalCount = totalCountResult[0]?.count || 0;
-
-  // Pass the server-fetched data to a client component for interactivity
   return (
     <TendersListComponent
-      tenders={tendersData}
-      totalCount={totalCount}
-      currentPage={page}
+      tenders={queryResult.tenders}
+      totalCount={queryResult.totalCount}
+      currentPage={queryResult.currentPage}
+      filters={filters}
+      filterStats={filterStats}
+      sortBy={sortBy}
+      sortOrder={sortOrder}
     />
   );
 }

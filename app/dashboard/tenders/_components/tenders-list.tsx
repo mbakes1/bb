@@ -11,25 +11,29 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calendar } from "@/components/ui/calendar";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   CalendarDays,
   Building2,
   FileText,
-  Search,
   RefreshCw,
-  Calendar as CalendarIcon,
   AlertTriangle,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { FilterSheet } from "@/components/tenders/filter-sheet";
+import { serializeFiltersToParams } from "@/lib/url-params";
+import type { TenderFilters, FilterStats } from "@/types/filters";
 
 interface TenderData {
   ocid: string;
@@ -39,6 +43,7 @@ interface TenderData {
   procurementMethod: string | null;
   procurementMethodDetails: string | null;
   mainProcurementCategory: string | null;
+  status: string | null;
   publishedDate: Date | null;
   startDate: Date | null;
   endDate: Date | null;
@@ -52,72 +57,47 @@ interface TendersListProps {
   tenders: TenderData[];
   totalCount: number;
   currentPage: number;
+  filters: TenderFilters;
+  filterStats: FilterStats;
+  sortBy: "publishedDate" | "endDate" | "value";
+  sortOrder: "asc" | "desc";
 }
 
 export function TendersListComponent({
   tenders,
   totalCount,
   currentPage,
+  filters,
+  filterStats,
+  sortBy,
+  sortOrder,
 }: TendersListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Get current dates from URL params or set defaults
-  const getDefaultDates = () => {
-    const today = new Date();
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(today.getMonth() - 6);
-    return { from: sixMonthsAgo, to: today };
+  const handleFiltersChange = (newFilters: TenderFilters) => {
+    const params = serializeFiltersToParams(newFilters);
+
+    // Reset to first page
+    params.set("page", "1");
+
+    // Preserve sort parameters
+    params.set("sortBy", sortBy);
+    params.set("sortOrder", sortOrder);
+
+    router.push(`/dashboard/tenders?${params.toString()}`);
   };
 
-  const defaultDates = getDefaultDates();
-  const [dateFrom, setDateFrom] = useState<Date | undefined>(
-    searchParams.get("dateFrom")
-      ? new Date(searchParams.get("dateFrom")!)
-      : defaultDates.from
-  );
-  const [dateTo, setDateTo] = useState<Date | undefined>(
-    searchParams.get("dateTo")
-      ? new Date(searchParams.get("dateTo")!)
-      : defaultDates.to
-  );
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const handleSortChange = (newSortBy: string) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-  const validateDates = useCallback((): boolean => {
-    setValidationError(null);
+    // If same sort field, toggle order; otherwise use desc as default
+    const newSortOrder =
+      newSortBy === sortBy && sortOrder === "desc" ? "asc" : "desc";
 
-    if (!dateFrom || !dateTo) {
-      setValidationError(
-        "Please select both start and end dates to search for opportunities."
-      );
-      return false;
-    }
-
-    if (dateFrom > dateTo) {
-      setValidationError("Start date cannot be later than end date.");
-      return false;
-    }
-
-    const diffTime = Math.abs(dateTo.getTime() - dateFrom.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays > 730) {
-      setValidationError(
-        "Date range cannot exceed 2 years. Please select a shorter period."
-      );
-      return false;
-    }
-
-    return true;
-  }, [dateFrom, dateTo]);
-
-  const handleSearch = () => {
-    if (!validateDates()) return;
-
-    const params = new URLSearchParams();
-    if (dateFrom) params.set("dateFrom", format(dateFrom, "yyyy-MM-dd"));
-    if (dateTo) params.set("dateTo", format(dateTo, "yyyy-MM-dd"));
-    params.set("page", "1");
+    params.set("sortBy", newSortBy);
+    params.set("sortOrder", newSortOrder);
+    params.set("page", "1"); // Reset to first page
 
     router.push(`/dashboard/tenders?${params.toString()}`);
   };
@@ -157,6 +137,21 @@ export function TendersListComponent({
     }
   };
 
+  const getTenderStatus = (tender: TenderData) => {
+    if (tender.status) return tender.status;
+    if (tender.endDate && tender.endDate < new Date()) return "closed";
+    return "active";
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortBy !== field) return <ArrowUpDown className="ml-2 h-4 w-4" />;
+    return sortOrder === "asc" ? (
+      <ArrowUp className="ml-2 h-4 w-4" />
+    ) : (
+      <ArrowDown className="ml-2 h-4 w-4" />
+    );
+  };
+
   const pageSize = 20;
   const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -171,104 +166,80 @@ export function TendersListComponent({
               business
             </p>
           </div>
-          <Button onClick={() => router.refresh()}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <FilterSheet
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              filterStats={filterStats}
+            />
+            <Button onClick={() => router.refresh()}>
+              <RefreshCw className="mr-2 h-4 w-4" />
+              Refresh
+            </Button>
+          </div>
         </div>
 
-        {/* Filters */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Search Opportunities</CardTitle>
-            <CardDescription>
-              Select a date range to find relevant procurement opportunities.
-              Both dates are required.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <label className="text-sm font-medium mb-2 block">
-                  From Date *
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !dateFrom && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateFrom ? (
-                        format(dateFrom, "PPP")
-                      ) : (
-                        <span>Pick start date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={dateFrom}
-                      onSelect={setDateFrom}
-                      disabled={(date) => date > new Date()}
-                    />
-                  </PopoverContent>
-                </Popover>
+        {/* Active Filters Summary */}
+        {(filters.keyword ||
+          filters.procuringEntity?.length ||
+          filters.procurementCategory?.length ||
+          filters.procurementMethod?.length ||
+          filters.valueMin !== undefined ||
+          filters.valueMax !== undefined ||
+          filters.closingDateFrom ||
+          filters.closingDateTo ||
+          filters.publishedDateFrom ||
+          filters.publishedDateTo ||
+          (filters.status && filters.status !== "all")) && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-wrap gap-2">
+                {filters.keyword && (
+                  <Badge variant="secondary">
+                    Keyword: "{filters.keyword}"
+                  </Badge>
+                )}
+                {filters.procuringEntity?.map((entity) => (
+                  <Badge key={entity} variant="secondary">
+                    Entity: {entity}
+                  </Badge>
+                ))}
+                {filters.procurementCategory?.map((category) => (
+                  <Badge key={category} variant="secondary">
+                    Category: {category}
+                  </Badge>
+                ))}
+                {filters.procurementMethod?.map((method) => (
+                  <Badge key={method} variant="secondary">
+                    Method: {method}
+                  </Badge>
+                ))}
+                {(filters.valueMin !== undefined ||
+                  filters.valueMax !== undefined) && (
+                  <Badge variant="secondary">
+                    Value: {filters.valueMin || 0} - {filters.valueMax || "∞"}{" "}
+                    {filters.valueCurrency || "ZAR"}
+                  </Badge>
+                )}
+                {(filters.closingDateFrom || filters.closingDateTo) && (
+                  <Badge variant="secondary">
+                    Closing: {filters.closingDateFrom?.toLocaleDateString()} -{" "}
+                    {filters.closingDateTo?.toLocaleDateString()}
+                  </Badge>
+                )}
+                {(filters.publishedDateFrom || filters.publishedDateTo) && (
+                  <Badge variant="secondary">
+                    Published: {filters.publishedDateFrom?.toLocaleDateString()}{" "}
+                    - {filters.publishedDateTo?.toLocaleDateString()}
+                  </Badge>
+                )}
+                {filters.status && filters.status !== "all" && (
+                  <Badge variant="secondary">Status: {filters.status}</Badge>
+                )}
               </div>
-              <div className="flex-1">
-                <label className="text-sm font-medium mb-2 block">
-                  To Date *
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !dateTo && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateTo ? (
-                        format(dateTo, "PPP")
-                      ) : (
-                        <span>Pick end date</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={dateTo}
-                      onSelect={setDateTo}
-                      disabled={(date) => {
-                        if (date > new Date()) return true;
-                        if (dateFrom && date < dateFrom) return true;
-                        return false;
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div className="flex items-end">
-                <Button onClick={handleSearch}>
-                  <Search className="mr-2 h-4 w-4" />
-                  Find Opportunities
-                </Button>
-              </div>
-            </div>
-            {validationError && (
-              <Alert variant="destructive" className="mt-4">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>{validationError}</AlertDescription>
-              </Alert>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Results */}
@@ -283,7 +254,7 @@ export function TendersListComponent({
               No opportunities were found for the selected criteria.
             </p>
             <p className="text-sm text-muted-foreground text-center">
-              Try expanding your date range or check back later for new
+              Try adjusting your filters or check back later for new
               opportunities.
             </p>
           </CardContent>
@@ -294,75 +265,142 @@ export function TendersListComponent({
             <p className="text-sm text-muted-foreground">
               Found {totalCount} opportunit{totalCount !== 1 ? "ies" : "y"}
             </p>
-            <Badge variant="secondary">
-              Page {currentPage} of {totalPages}
-            </Badge>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Sort by:</span>
+                <Select value={sortBy} onValueChange={handleSortChange}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="publishedDate">
+                      <div className="flex items-center">
+                        Published Date
+                        {getSortIcon("publishedDate")}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="endDate">
+                      <div className="flex items-center">
+                        Closing Date
+                        {getSortIcon("endDate")}
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="value">
+                      <div className="flex items-center">
+                        Value
+                        {getSortIcon("value")}
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Badge variant="secondary">
+                Page {currentPage} of {totalPages}
+              </Badge>
+            </div>
           </div>
 
-          {tenders.map((tender) => (
-            <Card
-              key={tender.ocid}
-              className="hover:shadow-md transition-shadow cursor-pointer"
-            >
-              <Link
-                href={`/dashboard/tenders/${encodeURIComponent(tender.ocid)}`}
+          {tenders.map((tender) => {
+            const status = getTenderStatus(tender);
+            const isActive = status === "active";
+
+            return (
+              <Card
+                key={tender.ocid}
+                className="hover:shadow-md transition-shadow cursor-pointer"
               >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-2">
-                        {tender.title}
-                      </CardTitle>
-                      <CardDescription className="line-clamp-2">
-                        {tender.description || "No description available"}
-                      </CardDescription>
+                <Link
+                  href={`/dashboard/tenders/${encodeURIComponent(tender.ocid)}`}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <CardTitle className="text-xl">
+                            {tender.title}
+                          </CardTitle>
+                          <Badge
+                            variant={isActive ? "default" : "secondary"}
+                            className={cn(
+                              "text-xs",
+                              isActive
+                                ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                : ""
+                            )}
+                          >
+                            {status.toUpperCase()}
+                          </Badge>
+                        </div>
+                        <CardDescription className="line-clamp-2">
+                          {tender.description || "No description available"}
+                        </CardDescription>
+                      </div>
+                      <Badge variant="outline" className="ml-4">
+                        {tender.procurementMethodDetails ||
+                          tender.procurementMethod ||
+                          "N/A"}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="ml-4">
-                      {tender.procurementMethodDetails ||
-                        tender.procurementMethod ||
-                        "N/A"}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Procuring Entity:</span>
-                      <span>{tender.procuringEntity?.name || "N/A"}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium">Period:</span>
-                      <span>
-                        {formatDate(tender.startDate)} -{" "}
-                        {formatDate(tender.endDate)}
-                      </span>
-                    </div>
-                    {tender.value?.amount && (
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">Value:</span>
-                        <span>
-                          {formatCurrency(
-                            tender.value.amount,
-                            tender.value.currency
-                          )}
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">Procuring Entity:</span>
+                        <span className="truncate">
+                          {tender.procuringEntity?.name || "N/A"}
                         </span>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium">Closing:</span>
+                        <span
+                          className={cn(
+                            "truncate",
+                            tender.endDate && tender.endDate < new Date()
+                              ? "text-red-600"
+                              : tender.endDate &&
+                                tender.endDate <
+                                  new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                              ? "text-orange-600"
+                              : ""
+                          )}
+                        >
+                          {formatDate(tender.endDate)}
+                        </span>
+                      </div>
+                      {tender.value?.amount && (
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">Value:</span>
+                          <span className="truncate">
+                            {formatCurrency(
+                              tender.value.amount,
+                              tender.value.currency
+                            )}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {tender.mainProcurementCategory && (
+                      <div className="mt-3">
+                        <Badge variant="outline" className="text-xs">
+                          {tender.mainProcurementCategory}
+                        </Badge>
+                      </div>
                     )}
-                  </div>
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="text-xs text-muted-foreground">
-                      OCID: {tender.ocid}
+                    <div className="mt-4 flex items-center justify-between">
+                      <div className="text-xs text-muted-foreground">
+                        OCID: {tender.ocid}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Published: {formatDate(tender.publishedDate)}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      Released: {formatDate(tender.publishedDate)}
-                    </div>
-                  </div>
-                </CardContent>
-              </Link>
-            </Card>
-          ))}
+                  </CardContent>
+                </Link>
+              </Card>
+            );
+          })}
 
           {/* Pagination */}
           <div className="flex items-center justify-between">
