@@ -1,0 +1,1 @@
+ALTER TABLE "tender_documents" ADD CONSTRAINT "tender_documents_tender_ocid_document_id_unique" UNIQUE("tender_ocid","document_id");

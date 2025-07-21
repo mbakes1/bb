@@ -115,7 +115,20 @@ async function syncTenders() {
       const batch = allDocuments.slice(i, i + docBatchSize);
 
       if (batch.length > 0) {
-        await db.insert(tenderDocuments).values(batch).onConflictDoNothing(); // Avoid duplicate documents
+        await db
+          .insert(tenderDocuments)
+          .values(batch)
+          .onConflictDoUpdate({
+            target: [tenderDocuments.tenderOcid, tenderDocuments.documentId],
+            set: {
+              title: sql`excluded.title`,
+              description: sql`excluded.description`,
+              url: sql`excluded.url`,
+              format: sql`excluded.format`,
+              datePublished: sql`excluded.date_published`,
+              dateModified: sql`excluded.date_modified`,
+            },
+          });
 
         documentCount += batch.length;
         console.log(

@@ -5,6 +5,7 @@ import {
   timestamp,
   serial,
   jsonb,
+  unique,
 } from "drizzle-orm/pg-core";
 import type { ProcuringEntity, Value } from "@/types/tender";
 
@@ -83,16 +84,23 @@ export const tenders = pgTable("tenders", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export const tenderDocuments = pgTable("tender_documents", {
-  id: serial("id").primaryKey(),
-  tenderOcid: text("tender_ocid")
-    .notNull()
-    .references(() => tenders.ocid, { onDelete: "cascade" }),
-  documentId: text("document_id"),
-  title: text("title"),
-  description: text("description"),
-  url: text("url"),
-  format: text("format"),
-  datePublished: timestamp("date_published"),
-  dateModified: timestamp("date_modified"),
-});
+export const tenderDocuments = pgTable(
+  "tender_documents",
+  {
+    id: serial("id").primaryKey(),
+    tenderOcid: text("tender_ocid")
+      .notNull()
+      .references(() => tenders.ocid, { onDelete: "cascade" }),
+    documentId: text("document_id"),
+    title: text("title"),
+    description: text("description"),
+    url: text("url"),
+    format: text("format"),
+    datePublished: timestamp("date_published"),
+    dateModified: timestamp("date_modified"),
+  },
+  (table) => ({
+    // Create unique constraint on tenderOcid + documentId to prevent duplicates
+    uniqueDoc: unique().on(table.tenderOcid, table.documentId),
+  })
+);
