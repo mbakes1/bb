@@ -20,7 +20,6 @@ import UserProfile from "@/components/user-profile";
 import {
   ChevronRight,
   HelpCircle,
-  HomeIcon,
   LucideIcon,
   MessageSquare,
   Settings,
