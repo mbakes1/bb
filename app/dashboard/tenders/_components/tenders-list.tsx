@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import {
   CalendarDays,
-  Building2,
   FileText,
   RefreshCw,
   ArrowUpDown,
@@ -118,19 +111,6 @@ export function TendersListComponent({
       });
     } catch {
       return "N/A";
-    }
-  };
-
-  const formatCurrency = (amount?: number, currency?: string) => {
-    if (!amount && amount !== 0) return "N/A";
-    const currencyCode = currency || "ZAR";
-    try {
-      return new Intl.NumberFormat("en-ZA", {
-        style: "currency",
-        currency: currencyCode,
-      }).format(amount);
-    } catch {
-      return `${currencyCode} ${amount.toLocaleString()}`;
     }
   };
 
@@ -252,120 +232,64 @@ export function TendersListComponent({
                 <Link
                   href={`/dashboard/tenders/${encodeURIComponent(tender.ocid)}`}
                 >
-                  <CardHeader className="pb-4">
-                    <div className="space-y-3">
-                      {/* Title and Status Row - Mobile Optimized */}
-                      <div className="flex items-start gap-3">
-                        <div className="flex-1 min-w-0">
-                          <CardTitle className="text-lg sm:text-xl leading-tight break-words">
-                            {tender.title}
-                          </CardTitle>
-                        </div>
-                        <div className="flex flex-col gap-2 flex-shrink-0">
-                          <Badge
-                            variant={isActive ? "default" : "secondary"}
-                            className={cn(
-                              "text-xs",
-                              isActive
-                                ? "bg-green-100 text-green-800 hover:bg-green-200"
-                                : ""
-                            )}
-                          >
-                            {status.toUpperCase()}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {tender.procurementMethodDetails ||
-                              tender.procurementMethod ||
-                              "N/A"}
-                          </Badge>
-                        </div>
+                  <CardContent className="px-4 py-3">
+                    {/* Header with Status Badge */}
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="flex-1 min-w-0">
+                        {/* Description - Primary Focus */}
+                        <p className="text-sm leading-relaxed line-clamp-2 mb-2">
+                          {tender.description || "No description available"}
+                        </p>
+                        <h3 className="font-medium text-xs text-muted-foreground">
+                          {tender.procuringEntity?.name || "Unknown Entity"}
+                        </h3>
                       </div>
-
-                      {/* Description */}
-                      <CardDescription className="line-clamp-3 text-sm leading-relaxed">
-                        {tender.description || "No description available"}
-                      </CardDescription>
+                      <Badge
+                        variant={isActive ? "default" : "secondary"}
+                        className={cn(
+                          "text-xs flex-shrink-0",
+                          isActive
+                            ? "bg-green-100 text-green-800 hover:bg-green-200"
+                            : ""
+                        )}
+                      >
+                        {status.toUpperCase()}
+                      </Badge>
                     </div>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    {/* Info Grid - Mobile Optimized */}
-                    <div className="space-y-3 text-sm">
-                      {/* Procuring Entity */}
-                      <div className="flex items-start gap-2">
-                        <Building2 className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <span className="font-medium text-muted-foreground">
-                            Procuring Entity:
-                          </span>
-                          <div className="break-words">
-                            {tender.procuringEntity?.name || "N/A"}
-                          </div>
-                        </div>
-                      </div>
 
-                      {/* Closing Date */}
-                      <div className="flex items-start gap-2">
-                        <CalendarDays className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <span className="font-medium text-muted-foreground">
-                            Closing Date:
-                          </span>
-                          <div
-                            className={cn(
-                              "break-words",
-                              tender.endDate && tender.endDate < new Date()
-                                ? "text-red-600 font-medium"
-                                : tender.endDate &&
-                                  tender.endDate <
+                    {/* Essential Info Row */}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center gap-4">
+                        {/* Procurement Method */}
+                        <span className="flex items-center gap-1">
+                          <FileText className="h-3 w-3" />
+                          {tender.procurementMethodDetails ||
+                            tender.procurementMethod ||
+                            "N/A"}
+                        </span>
+
+                        {/* Tender Period */}
+                        <span className="flex items-center gap-1">
+                          <CalendarDays className="h-3 w-3" />
+                          {tender.endDate ? (
+                            <span
+                              className={cn(
+                                tender.endDate < new Date()
+                                  ? "text-red-600 font-medium"
+                                  : tender.endDate <
                                     new Date(
                                       Date.now() + 7 * 24 * 60 * 60 * 1000
                                     )
-                                ? "text-orange-600 font-medium"
-                                : ""
-                            )}
-                          >
-                            {formatDate(tender.endDate)}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Value */}
-                      {tender.value?.amount && (
-                        <div className="flex items-start gap-2">
-                          <span className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0">
-                            💰
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <span className="font-medium text-muted-foreground">
-                              Value:
-                            </span>
-                            <div className="break-words font-medium">
-                              {formatCurrency(
-                                tender.value.amount,
-                                tender.value.currency
+                                  ? "text-orange-600 font-medium"
+                                  : ""
                               )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Category Badge */}
-                    {tender.mainProcurementCategory && (
-                      <div className="mt-4">
-                        <Badge variant="outline" className="text-xs">
-                          {tender.mainProcurementCategory}
-                        </Badge>
-                      </div>
-                    )}
-
-                    {/* Footer Info - Mobile Stacked */}
-                    <div className="mt-4 pt-3 border-t space-y-1 sm:flex sm:items-center sm:justify-between sm:space-y-0">
-                      <div className="text-xs text-muted-foreground break-all">
-                        OCID: {tender.ocid}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Published: {formatDate(tender.publishedDate)}
+                            >
+                              Closes {formatDate(tender.endDate)}
+                            </span>
+                          ) : (
+                            "No closing date"
+                          )}
+                        </span>
                       </div>
                     </div>
                   </CardContent>

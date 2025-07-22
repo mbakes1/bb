@@ -11,8 +11,6 @@ import {
   CalendarDays,
   FileText,
   Download,
-  Globe,
-  DollarSign,
 } from "lucide-react";
 
 interface TenderData {
@@ -71,215 +69,176 @@ export function TenderDetailComponent({
     }
   };
 
-  const formatCurrency = (amount?: number, currency?: string) => {
-    if (!amount && amount !== 0) return "N/A";
-    const currencyCode = currency || "ZAR";
-    try {
-      return new Intl.NumberFormat("en-ZA", {
-        style: "currency",
-        currency: currencyCode,
-      }).format(amount);
-    } catch {
-      return `${currencyCode} ${amount.toLocaleString()}`;
-    }
+  const getTenderStatus = (tender: TenderData) => {
+    if (tender.endDate && tender.endDate < new Date()) return "closed";
+    return "active";
   };
 
+  const status = getTenderStatus(tender);
+  const isActive = status === "active";
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => router.back()}>
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Tenders
+          Back to Opportunities
         </Button>
       </div>
 
       {/* Main Details */}
       <Card>
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <CardTitle className="text-2xl mb-2">{tender.title}</CardTitle>
-              <div className="flex flex-wrap gap-2 mb-4">
-                <Badge variant="outline">OCID: {tender.ocid}</Badge>
-                {tender.id && <Badge variant="outline">ID: {tender.id}</Badge>}
+        <CardHeader className="pb-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              {/* Description - Primary Focus */}
+              <CardTitle className="text-lg mb-3 leading-relaxed font-normal">
+                {tender.description || "No description available"}
+              </CardTitle>
+              <div className="flex flex-wrap gap-2 mb-2">
+                <Badge
+                  variant={isActive ? "default" : "secondary"}
+                  className={
+                    isActive
+                      ? "bg-green-100 text-green-800 hover:bg-green-200"
+                      : ""
+                  }
+                >
+                  {status.toUpperCase()}
+                </Badge>
                 {tender.procurementMethodDetails && (
-                  <Badge>{tender.procurementMethodDetails}</Badge>
+                  <Badge variant="outline">
+                    {tender.procurementMethodDetails}
+                  </Badge>
                 )}
               </div>
+              {/* Reference ID - Secondary */}
+              <p className="text-sm text-muted-foreground font-mono">
+                {tender.title}
+              </p>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Description */}
-            <div>
-              <h3 className="text-lg font-semibold mb-3">Description</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {tender.description || "No description available"}
+        <CardContent className="space-y-4">
+          <Separator />
+
+          {/* Essential Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Procuring Entity */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Building2 className="h-4 w-4 text-muted-foreground" />
+                Procuring Entity
+              </div>
+              <p className="text-sm pl-6">
+                {tender.procuringEntity?.name || "Not specified"}
               </p>
             </div>
 
-            <Separator />
-
-            {/* Key Information Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Procuring Entity */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  Procuring Entity
-                </h3>
-                <div className="space-y-2">
-                  <p className="font-medium">
-                    {tender.procuringEntity?.name || "N/A"}
-                  </p>
-                  {tender.procuringEntity?.id && (
-                    <p className="text-sm text-muted-foreground">
-                      ID: {tender.procuringEntity.id}
-                    </p>
-                  )}
-                </div>
+            {/* Procurement Method */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                Procurement Method
               </div>
+              <p className="text-sm pl-6">
+                {tender.procurementMethodDetails ||
+                  tender.procurementMethod ||
+                  "Not specified"}
+              </p>
+            </div>
 
-              {/* Procurement Details */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Procurement Details
-                </h3>
-                <div className="space-y-2">
-                  <div>
-                    <span className="font-medium">Method: </span>
-                    <span>
-                      {tender.procurementMethodDetails ||
-                        tender.procurementMethod ||
-                        "N/A"}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="font-medium">Category: </span>
-                    <span>{tender.mainProcurementCategory || "N/A"}</span>
-                  </div>
-                </div>
+            {/* Tender Period */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                Tender Period
               </div>
-
-              {/* Tender Period */}
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <CalendarDays className="h-5 w-5" />
-                  Tender Period
-                </h3>
-                <div className="space-y-2">
+              <div className="text-sm pl-6 space-y-1">
+                {tender.startDate && (
                   <div>
-                    <span className="font-medium">Start: </span>
+                    <span className="text-muted-foreground">Opens: </span>
                     <span>{formatDate(tender.startDate)}</span>
                   </div>
-                  <div>
-                    <span className="font-medium">End: </span>
-                    <span>{formatDate(tender.endDate)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Value */}
-              {tender.value?.amount && (
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <DollarSign className="h-5 w-5" />
-                    Value
-                  </h3>
-                  <div className="space-y-2">
-                    <p className="text-xl font-bold text-green-600">
-                      {formatCurrency(
-                        tender.value.amount,
-                        tender.value.currency
-                      )}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <Separator />
-
-            {/* Release Information */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold flex items-center gap-2">
-                <Globe className="h-5 w-5" />
-                Release Information
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                )}
                 <div>
-                  <span className="font-medium">Published: </span>
-                  <span>{formatDate(tender.publishedDate)}</span>
-                </div>
-                <div>
-                  <span className="font-medium">Last Updated: </span>
-                  <span>{formatDate(tender.updatedAt)}</span>
+                  <span className="text-muted-foreground">Closes: </span>
+                  <span
+                    className={
+                      tender.endDate && tender.endDate < new Date()
+                        ? "text-red-600 font-medium"
+                        : tender.endDate &&
+                          tender.endDate <
+                            new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                        ? "text-orange-600 font-medium"
+                        : ""
+                    }
+                  >
+                    {formatDate(tender.endDate)}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Documents */}
-            {documents.length > 0 && (
-              <>
-                <Separator />
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    Documents ({documents.length})
-                  </h3>
-                  <div className="grid gap-4">
-                    {documents.map((doc) => (
-                      <Card
-                        key={doc.id}
-                        className="border-l-4 border-l-blue-500"
-                      >
-                        <CardContent className="pt-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-semibold mb-2">
-                                {doc.title || "Untitled Document"}
-                              </h4>
-                              {doc.description && (
-                                <p className="text-sm text-muted-foreground mb-3">
-                                  {doc.description}
-                                </p>
-                              )}
-                              <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-                                <span>Format: {doc.format || "N/A"}</span>
-                                <span>
-                                  Published: {formatDate(doc.datePublished)}
-                                </span>
-                                {doc.dateModified && (
-                                  <span>
-                                    Modified: {formatDate(doc.dateModified)}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {doc.url && (
-                              <Button asChild size="sm">
-                                <a
-                                  href={doc.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <Download className="h-4 w-4 mr-2" />
-                                  Download
-                                </a>
-                              </Button>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+            {/* Category */}
+            {tender.mainProcurementCategory && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  Category
                 </div>
-              </>
+                <p className="text-sm pl-6">{tender.mainProcurementCategory}</p>
+              </div>
             )}
           </div>
+
+          {/* Documents */}
+          {documents.length > 0 && (
+            <>
+              <Separator />
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  Documents ({documents.length})
+                </h3>
+                <div className="space-y-2">
+                  {documents.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-sm font-medium truncate">
+                          {doc.title || "Untitled Document"}
+                        </h4>
+                        {doc.description && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                            {doc.description}
+                          </p>
+                        )}
+                        <div className="flex gap-3 text-xs text-muted-foreground mt-1">
+                          <span>{doc.format || "Unknown format"}</span>
+                        </div>
+                      </div>
+                      {doc.url && (
+                        <Button asChild size="sm" variant="outline">
+                          <a
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Download className="h-3 w-3 mr-1" />
+                            Download
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
