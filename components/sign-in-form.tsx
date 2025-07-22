@@ -25,7 +25,7 @@ export function SignInForm({
   const [password, setPassword] = useState("");
   const searchParams = useSearchParams();
   const router = useRouter();
-  const returnTo = searchParams.get("returnTo") || "/dashboard";
+  const returnTo = searchParams.get("returnTo") || "/dashboard/tenders";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

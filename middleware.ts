@@ -6,11 +6,16 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (sessionCookie && ["/sign-in", "/sign-up"].includes(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/dashboard/tenders", request.url));
   }
 
   if (!sessionCookie && pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
+
+  // Redirect dashboard root to tenders page
+  if (sessionCookie && pathname === "/dashboard") {
+    return NextResponse.redirect(new URL("/dashboard/tenders", request.url));
   }
 
   return NextResponse.next();

@@ -47,11 +47,6 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: "Overview",
-    href: "/dashboard",
-    icon: HomeIcon,
-  },
-  {
     label: "Opportunities",
     href: "/dashboard/tenders",
     icon: FileText,
